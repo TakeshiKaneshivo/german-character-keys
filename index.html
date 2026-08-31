@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>德语键盘辅助输入</title>
+  </head>
+  <body>
+    <main class="panel">
+      <header class="header">
+        <div>
+          <p class="eyebrow">GERMAN KEY ASSIST</p>
+          <h1>德语键盘辅助输入</h1>
+        </div>
+        <span id="status-badge" class="badge">关闭</span>
+      </header>
+
+      <section class="control-row">
+        <div>
+          <h2>辅助映射</h2>
+          <p id="status-text">开启后，四个美式键位会输出德语字符。</p>
+        </div>
+        <label class="switch" aria-label="启用或关闭德语辅助映射">
+          <input id="enabled" type="checkbox" />
+          <span class="slider"></span>
+        </label>
+      </section>
+
+      <section class="section">
+        <h2>快捷键</h2>
+        <div class="shortcut-row">
+          <input id="shortcut-input" value="Ctrl+K" aria-label="全局快捷键" />
+          <button id="save-shortcut" type="button">保存</button>
+          <button id="reset-shortcut" type="button">恢复默认</button>
+        </div>
+        <p id="shortcut-status" class="hint">快捷键用于切换辅助映射。</p>
+      </section>
+
+      <section class="section mapping">
+        <h2>当前映射</h2>
+        <div class="mapping-grid">
+          <span>[</span><strong>ü</strong><span>Shift+[</span><strong>Ü</strong>
+          <span>'</span><strong>ä</strong><span>Shift+'</span><strong>Ä</strong>
+          <span>;</span><strong>ö</strong><span>Shift+;</span><strong>Ö</strong>
+          <span>-</span><strong>ß</strong><span>Shift+-</span><strong>ẞ</strong>
+        </div>
+      </section>
+
+      <section id="permission-section" class="section permission hidden">
+        <h2>需要辅助功能权限</h2>
+        <p>macOS 需要允许本应用监控键盘事件，才能启用映射。</p>
+        <button id="open-permissions" type="button">打开系统设置</button>
+        <button id="refresh-permission" type="button">重新检测权限</button>
+      </section>
+
+      <footer>
+        <label class="login-option">
+          <input id="launch-at-login" type="checkbox" />
+          <span>登录时自动启动</span>
+        </label>
+        <span id="platform-label" class="hint"></span>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
