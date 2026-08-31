@@ -5,7 +5,7 @@ use crate::{
 use std::sync::{atomic::Ordering, Arc};
 use tauri::{
     menu::{CheckMenuItem, Menu, MenuItem},
-    tray::TrayIconBuilder,
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     AppHandle, Manager, Runtime, State,
 };
 use tauri_plugin_autostart::ManagerExt as AutoStartManagerExt;
@@ -24,10 +24,7 @@ pub fn run() {
                 .build(),
         )
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.set_focus();
-            }
+            show_main_window(app);
         }))
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .setup(setup)
@@ -79,17 +76,24 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     TrayIconBuilder::with_id("main")
         .icon(tauri::include_image!("icons/icon.png"))
         .menu(&menu)
-        .show_menu_on_left_click(true)
+        .show_menu_on_left_click(false)
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_main_window(tray.app_handle());
+            }
+        })
         .on_menu_event(|app, event| match event.id.as_ref() {
             "toggle" => {
                 let _ = toggle_enabled(app);
                 let _ = sync_tray(app);
             }
             "settings" => {
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.set_focus();
-                }
+                show_main_window(app);
             }
             "quit" => app.exit(0),
             _ => {}
@@ -109,6 +113,13 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
 fn build_tray_menu<R: Runtime, M: Manager<R>>(
     app: &M,
     state: &SharedState,
@@ -125,15 +136,15 @@ fn build_tray_menu<R: Runtime, M: Manager<R>>(
     let status = MenuItem::with_id(app, "status", tray_status(&runtime), false, None::<&str>)?;
     let settings = MenuItem::with_id(app, "settings", "设置", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
-    Menu::with_items(app, &[&enable, &status, &settings, &quit])
+    Menu::with_items(app, &[&status, &enable, &settings, &quit])
 }
 
 fn tray_status(runtime: &RuntimeState) -> String {
     match runtime.backend_status {
-        BackendStatus::PermissionRequired => "状态：需要权限".into(),
-        BackendStatus::InitializationFailed => "状态：初始化失败".into(),
-        BackendStatus::Running if runtime.enabled => "状态：开启".into(),
-        _ => "状态：关闭".into(),
+        BackendStatus::PermissionRequired => "当前状态：需要权限".into(),
+        BackendStatus::InitializationFailed => "当前状态：初始化失败".into(),
+        BackendStatus::Running if runtime.enabled => "当前状态：开启".into(),
+        _ => "当前状态：关闭".into(),
     }
 }
 
