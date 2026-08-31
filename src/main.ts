@@ -15,6 +15,7 @@ type OperationResult = { success: boolean; message?: string | null; status: Stat
 const enabled = document.querySelector<HTMLInputElement>("#enabled")!;
 const launchAtLogin = document.querySelector<HTMLInputElement>("#launch-at-login")!;
 const statusBadge = document.querySelector<HTMLElement>("#status-badge")!;
+const statusLabel = document.querySelector<HTMLElement>("#status-label")!;
 const statusText = document.querySelector<HTMLElement>("#status-text")!;
 const shortcutInput = document.querySelector<HTMLInputElement>("#shortcut-input")!;
 const shortcutStatus = document.querySelector<HTMLElement>("#shortcut-status")!;
@@ -23,7 +24,7 @@ const platformLabel = document.querySelector<HTMLElement>("#platform-label")!;
 
 function render(status: Status) {
   enabled.checked = status.enabled;
-  statusBadge.textContent = status.enabled ? "开启" : "关闭";
+  statusLabel.textContent = status.enabled ? "开启" : "关闭";
   statusBadge.className = `badge ${status.enabled ? "on" : ""}`;
   statusText.textContent = status.enabled
     ? "四个美式键位正在输出德语字符。"
@@ -32,6 +33,7 @@ function render(status: Status) {
   shortcutStatus.textContent = status.shortcut_registered
     ? "快捷键已注册。"
     : "快捷键不可用，请更换其他组合；托盘菜单仍可使用。";
+  shortcutStatus.className = "hint";
   platformLabel.textContent = status.platform;
   launchAtLogin.checked = status.launch_at_login;
   permissionSection.classList.toggle("hidden", status.accessibility_granted);
@@ -42,6 +44,7 @@ function renderOperation(operation: OperationResult) {
   if (operation.message) {
     statusText.textContent = operation.message;
     shortcutStatus.textContent = operation.message;
+    shortcutStatus.className = `hint ${operation.success ? "" : "error"}`;
   }
 }
 
