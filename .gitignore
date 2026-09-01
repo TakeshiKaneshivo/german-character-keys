@@ -6,6 +6,14 @@ src-tauri/gen/
 .DS_Store
 Thumbs.db
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.idea/
+.vscode/
+*.user
+*.suo
 .env
 .env.*
 !.env.example
