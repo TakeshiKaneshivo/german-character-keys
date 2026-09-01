@@ -237,8 +237,7 @@ unsafe extern "C" fn event_callback(
     }
     let flags = CGEventGetFlags(event);
     if !state.enabled.load(Ordering::Relaxed)
-        || flags & (FLAG_SHIFT | FLAG_CONTROL | FLAG_ALTERNATE | FLAG_COMMAND | FLAG_SECONDARY_FN)
-            != 0
+        || flags & (FLAG_CONTROL | FLAG_ALTERNATE | FLAG_COMMAND | FLAG_SECONDARY_FN) != 0
     {
         return event;
     }
@@ -273,6 +272,7 @@ unsafe fn post_unicode(character: char, repeat: bool) -> bool {
     if event.is_null() {
         return false;
     }
+    CGEventSetFlags(event, 0);
     let utf16: Vec<u16> = character.to_string().encode_utf16().collect();
     CGEventKeyboardSetUnicodeString(event, utf16.len(), utf16.as_ptr());
     CGEventSetIntegerValueField(event, KCG_EVENT_SOURCE_USER_DATA, EVENT_MARKER);
@@ -314,6 +314,7 @@ extern "C" {
     fn CGEventCreateKeyboardEvent(source: *mut c_void, keycode: u16, key_down: bool)
         -> *mut c_void;
     fn CGEventKeyboardSetUnicodeString(event: *mut c_void, length: usize, string: *const u16);
+    fn CGEventSetFlags(event: *mut c_void, flags: u64);
     fn CGEventSetIntegerValueField(event: *mut c_void, field: i64, value: i64);
     fn CGEventPost(tap: u32, event: *mut c_void);
 }

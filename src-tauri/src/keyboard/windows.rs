@@ -14,8 +14,8 @@ use windows_sys::Win32::{
     UI::{
         Input::KeyboardAndMouse::{
             GetAsyncKeyState, GetKeyState, SendInput, INPUT, INPUT_0, KEYBDINPUT, KEYEVENTF_KEYUP,
-            KEYEVENTF_UNICODE, VK_CAPITAL, VK_CONTROL, VK_LCONTROL, VK_LMENU, VK_LWIN, VK_MENU,
-            VK_RCONTROL, VK_RMENU, VK_RWIN, VK_SHIFT,
+            KEYEVENTF_UNICODE, VK_CAPITAL, VK_CONTROL, VK_LCONTROL, VK_LMENU, VK_LSHIFT, VK_LWIN,
+            VK_MENU, VK_RCONTROL, VK_RMENU, VK_RSHIFT, VK_RWIN, VK_SHIFT,
         },
         WindowsAndMessaging::{
             CallNextHookEx, DispatchMessageW, GetMessageW, PostThreadMessageW, SetWindowsHookExW,
@@ -184,13 +184,17 @@ unsafe extern "system" fn hook_proc(code: i32, w_param: WPARAM, l_param: LPARAM)
         }
         return CallNextHookEx(std::ptr::null_mut(), code, w_param, l_param);
     }
-    if !state.enabled.load(Ordering::Relaxed) || has_blocking_modifier() {
+    if !state.enabled.load(Ordering::Relaxed) {
+        return CallNextHookEx(std::ptr::null_mut(), code, w_param, l_param);
+    }
+    let blocking = has_blocking_modifier();
+    if blocking {
         return CallNextHookEx(std::ptr::null_mut(), code, w_param, l_param);
     }
     let caps = state.caps_lock.load(Ordering::Relaxed);
     let shift = (GetAsyncKeyState(VK_SHIFT as i32) as u16 & 0x8000) != 0;
     let character = mapped_character(key, uppercase(caps, shift));
-    if !inject_unicode(character) {
+    if !inject_unicode_without_shift(character) {
         return CallNextHookEx(std::ptr::null_mut(), code, w_param, l_param);
     }
     state.intercepted.lock().unwrap().insert(key);
@@ -223,6 +227,52 @@ unsafe fn has_blocking_modifier() -> bool {
     ];
     keys.iter()
         .any(|key| GetAsyncKeyState(*key as i32) as u16 & 0x8000 != 0)
+}
+
+unsafe fn inject_unicode_without_shift(character: char) -> bool {
+    let shifts = [
+        (
+            VK_LSHIFT,
+            (GetAsyncKeyState(VK_LSHIFT as i32) as u16 & 0x8000) != 0,
+        ),
+        (
+            VK_RSHIFT,
+            (GetAsyncKeyState(VK_RSHIFT as i32) as u16 & 0x8000) != 0,
+        ),
+    ];
+    let pressed: Vec<u16> = shifts
+        .iter()
+        .filter_map(|(key, down)| down.then_some(*key))
+        .collect();
+    if !pressed.is_empty() && !inject_shift_events(&pressed, true) {
+        return false;
+    }
+    let injected = inject_unicode(character);
+    let restored = pressed.is_empty() || inject_shift_events(&pressed, false);
+    injected && restored
+}
+
+unsafe fn inject_shift_events(keys: &[u16], key_up: bool) -> bool {
+    let inputs: Vec<INPUT> = keys
+        .iter()
+        .map(|key| INPUT {
+            r#type: 1,
+            Anonymous: INPUT_0 {
+                ki: KEYBDINPUT {
+                    wVk: *key,
+                    wScan: 0,
+                    dwFlags: if key_up { KEYEVENTF_KEYUP } else { 0 },
+                    time: 0,
+                    dwExtraInfo: INJECT_MARKER,
+                },
+            },
+        })
+        .collect();
+    SendInput(
+        inputs.len() as u32,
+        inputs.as_ptr(),
+        size_of::<INPUT>() as i32,
+    ) == inputs.len() as u32
 }
 
 unsafe fn inject_unicode(character: char) -> bool {

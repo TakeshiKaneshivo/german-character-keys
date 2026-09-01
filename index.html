@@ -7,84 +7,86 @@
   </head>
   <body>
     <main class="panel">
-      <header class="header">
-        <div class="brand-lockup">
-          <div class="app-mark" aria-hidden="true">⌨</div>
-          <div>
-            <p class="eyebrow">GERMAN KEY ASSIST</p>
-            <h1>德语键盘辅助输入</h1>
-            <p class="subtitle">让美式键盘直接输入德语字符</p>
+      <div class="layout-frame">
+        <header class="header">
+          <div class="brand-lockup">
+            <div class="app-mark" aria-hidden="true">⌨</div>
+            <div>
+              <p class="eyebrow">GERMAN KEY ASSIST</p>
+              <h1>德语键盘辅助输入</h1>
+              <p class="subtitle">让美式键盘直接输入德语字符</p>
+            </div>
           </div>
-        </div>
-        <span id="status-badge" class="badge" role="status" aria-live="polite">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span id="status-label">关闭</span>
-        </span>
-      </header>
+          <span id="status-badge" class="badge" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="status-label">关闭</span>
+          </span>
+        </header>
 
-      <section class="surface control-row">
-        <div class="section-copy">
-          <div class="section-kicker">核心功能</div>
-          <h2>辅助映射</h2>
-          <p id="status-text">开启后，四个美式键位会输出德语字符。</p>
-        </div>
-        <label class="switch" aria-label="启用或关闭德语辅助映射">
-          <input id="enabled" type="checkbox" />
-          <span class="slider"></span>
-        </label>
-      </section>
-
-      <section class="surface mapping">
-        <div class="section-heading">
-          <div>
-            <div class="section-kicker">键位速查</div>
-            <h2>当前映射</h2>
-          </div>
-          <span class="mapping-count">4 组键位</span>
-        </div>
-        <div class="mapping-grid">
-          <div class="mapping-item"><span class="keycap">[</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ü</strong><span class="mapping-shift">Shift + [ <b>→</b> Ü</span></div>
-          <div class="mapping-item"><span class="keycap">'</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ä</strong><span class="mapping-shift">Shift + ' <b>→</b> Ä</span></div>
-          <div class="mapping-item"><span class="keycap">;</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ö</strong><span class="mapping-shift">Shift + ; <b>→</b> Ö</span></div>
-          <div class="mapping-item"><span class="keycap">-</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ß</strong><span class="mapping-shift">Shift + - <b>→</b> ẞ</span></div>
-        </div>
-      </section>
-
-      <section class="surface shortcut-section">
-        <div class="section-heading">
-          <div>
+        <div class="top-grid">
+          <section class="pane shortcut-pane">
             <div class="section-kicker">快速切换</div>
             <h2>全局快捷键</h2>
-          </div>
-          <span class="shortcut-hint">用于开启或关闭映射</span>
-        </div>
-        <div class="shortcut-row">
-          <input id="shortcut-input" value="Ctrl+K" aria-label="全局快捷键" />
-          <button id="save-shortcut" class="primary-button" type="button">保存设置</button>
-          <button id="reset-shortcut" class="secondary-button" type="button">恢复默认</button>
-        </div>
-        <p id="shortcut-status" class="hint" aria-live="polite">快捷键用于切换辅助映射。</p>
-      </section>
+            <p class="pane-description">使用快捷键开启或关闭映射。</p>
+            <div class="shortcut-row">
+              <input id="shortcut-input" value="Ctrl+K" aria-label="全局快捷键" />
+              <button id="save-shortcut" class="primary-button" type="button">保存</button>
+              <button id="reset-shortcut" class="secondary-button" type="button">恢复</button>
+            </div>
+            <p id="shortcut-status" class="hint" aria-live="polite">快捷键用于切换辅助映射。</p>
+          </section>
 
-      <section id="permission-section" class="permission hidden" aria-live="polite">
-        <div class="permission-icon" aria-hidden="true">!</div>
-        <div class="permission-copy">
-          <h2>需要辅助功能权限</h2>
-          <p>macOS 需要允许本应用监控键盘事件，才能启用映射。</p>
-          <div class="permission-actions">
-            <button id="open-permissions" class="primary-button" type="button">打开系统设置</button>
-            <button id="refresh-permission" class="secondary-button" type="button">重新检测权限</button>
-          </div>
+          <section class="pane mapping-pane">
+            <div class="mapping-pane-heading">
+              <div>
+                <div class="section-kicker">核心功能</div>
+                <h2>辅助映射</h2>
+              </div>
+              <label class="switch" aria-label="启用或关闭德语辅助映射">
+                <input id="enabled" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p id="status-text">开启后，四个美式键位会输出德语字符。</p>
+          </section>
         </div>
-      </section>
 
-      <footer>
-        <label class="login-option">
-          <input id="launch-at-login" type="checkbox" />
-          <span>登录时自动启动</span>
-        </label>
-        <span id="platform-label" class="platform-label"></span>
-      </footer>
+        <section class="current-mapping">
+          <div class="section-heading">
+            <div>
+              <div class="section-kicker">键位速查</div>
+              <h2>当前映射</h2>
+            </div>
+            <span class="mapping-count">4 组键位</span>
+          </div>
+          <div class="mapping-grid">
+            <div class="mapping-item"><span class="keycap">[</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ü</strong></div>
+            <div class="mapping-item"><span class="keycap">'</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ä</strong></div>
+            <div class="mapping-item"><span class="keycap">;</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ö</strong></div>
+            <div class="mapping-item"><span class="keycap">-</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ß</strong></div>
+          </div>
+        </section>
+
+        <section id="permission-section" class="permission hidden" aria-live="polite">
+          <div class="permission-icon" aria-hidden="true">!</div>
+          <div class="permission-copy">
+            <h2>需要辅助功能权限</h2>
+            <p>macOS 需要允许本应用监控键盘事件，才能启用映射。</p>
+            <div class="permission-actions">
+              <button id="open-permissions" class="primary-button" type="button">打开系统设置</button>
+              <button id="refresh-permission" class="secondary-button" type="button">重新检测权限</button>
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          <label class="login-option">
+            <input id="launch-at-login" type="checkbox" />
+            <span>登录时自动启动</span>
+          </label>
+          <span id="platform-label" class="platform-label"></span>
+        </footer>
+      </div>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
