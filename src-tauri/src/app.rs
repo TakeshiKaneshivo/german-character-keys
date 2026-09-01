@@ -6,7 +6,8 @@ use std::sync::{atomic::Ordering, Arc};
 use tauri::{
     menu::{CheckMenuItem, Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    AppHandle, Manager, Runtime, State,
+    webview::WebviewWindowBuilder,
+    AppHandle, Manager, Runtime, State, WebviewUrl,
 };
 use tauri_plugin_autostart::ManagerExt as AutoStartManagerExt;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
@@ -36,7 +37,8 @@ pub fn run() {
             set_launch_at_login,
             get_permission_status,
             refresh_permission,
-            open_accessibility_settings
+            open_accessibility_settings,
+            open_help_window
         ])
         .run(tauri::generate_context!())
         .expect("error while running application");
@@ -100,7 +102,7 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         })
         .build(app)?;
 
-    register_shortcut(app.handle(), &state.config.lock().unwrap().toggle_shortcut);
+    let _ = register_shortcut(app.handle(), &state.config.lock().unwrap().toggle_shortcut);
     if let Some(window) = app.get_webview_window("main") {
         let hidden_window = window.clone();
         window.on_window_event(move |event| {
@@ -115,8 +117,11 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
 fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
     if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
         let _ = window.show();
+        let _ = window.set_always_on_top(true);
         let _ = window.set_focus();
+        let _ = window.set_always_on_top(false);
     }
 }
 
@@ -157,7 +162,7 @@ fn sync_tray(app: &AppHandle) -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
-fn register_shortcut(app: &AppHandle, value: &str) {
+fn register_shortcut(app: &AppHandle, value: &str) -> Result<(), String> {
     let state = app.state::<Arc<SharedState>>();
     let parsed = parse_shortcut(value);
     let result = parsed.map_err(|e| e.to_string()).and_then(|shortcut| {
@@ -168,7 +173,9 @@ fn register_shortcut(app: &AppHandle, value: &str) {
     *state.shortcut_registered.lock().unwrap() = result.is_ok();
     if let Err(error) = result {
         *state.message.lock().unwrap() = Some(format!("快捷键注册失败: {error}"));
+        return Err(error);
     }
+    Ok(())
 }
 
 fn parse_shortcut(value: &str) -> Result<Shortcut, String> {
@@ -180,17 +187,6 @@ fn parse_shortcut(value: &str) -> Result<Shortcut, String> {
 fn set_backend_status(state: &SharedState, status: BackendStatus, message: Option<String>) {
     *state.backend_status.lock().unwrap() = status;
     *state.message.lock().unwrap() = message;
-}
-
-fn sync_backend_status(state: &SharedState, backend: &dyn KeyboardBackend) {
-    let _ = backend.refresh_permission();
-    let granted = backend.permission_status();
-    *state.accessibility_granted.lock().unwrap() = granted;
-    *state.backend_status.lock().unwrap() = if granted {
-        backend.status()
-    } else {
-        BackendStatus::PermissionRequired
-    };
 }
 
 fn result(state: &SharedState, success: bool, message: Option<String>) -> OperationResult {
@@ -208,30 +204,39 @@ fn failure(state: &SharedState, message: impl Into<String>) -> OperationResult {
 
 fn apply_enabled(app: &AppHandle, enabled: bool) -> Result<OperationResult, String> {
     let state = app.state::<Arc<SharedState>>();
+    let _operation = state.operation_lock.lock().map_err(|e| e.to_string())?;
+    apply_enabled_locked(app, &state, enabled)
+}
+
+fn apply_enabled_locked(
+    app: &AppHandle,
+    state: &SharedState,
+    enabled: bool,
+) -> Result<OperationResult, String> {
     let old_enabled = state.enabled.load(Ordering::Relaxed);
     if old_enabled == enabled {
-        return Ok(result(&state, true, None));
+        return Ok(result(state, true, None));
     }
     let backend = app.state::<Arc<dyn KeyboardBackend>>();
     if let Err(error) = backend.set_enabled(enabled) {
-        set_backend_status(&state, backend.status(), Some(error.clone()));
-        return Ok(failure(&state, error));
+        set_backend_status(state, backend.status(), Some(error.clone()));
+        return Ok(failure(state, error));
     }
     let old_config = state.config.lock().map_err(|e| e.to_string())?.clone();
     state.config.lock().map_err(|e| e.to_string())?.enabled = enabled;
-    if let Err(error) = state.save() {
+    if let Err(error) = state.save_locked() {
         state
             .config
             .lock()
             .map_err(|e| e.to_string())?
             .clone_from(&old_config);
         let _ = backend.set_enabled(old_enabled);
-        set_backend_status(&state, backend.status(), Some(error.clone()));
-        return Ok(failure(&state, error));
+        set_backend_status(state, backend.status(), Some(error.clone()));
+        return Ok(failure(state, error));
     }
     state.enabled.store(enabled, Ordering::Relaxed);
-    set_backend_status(&state, backend.status(), None);
-    Ok(result(&state, true, None))
+    set_backend_status(state, backend.status(), None);
+    Ok(result(state, true, None))
 }
 
 fn toggle_enabled(app: &AppHandle) -> Result<OperationResult, String> {
@@ -243,11 +248,7 @@ fn toggle_enabled(app: &AppHandle) -> Result<OperationResult, String> {
 }
 
 #[tauri::command]
-fn get_status(
-    state: State<'_, Arc<SharedState>>,
-    backend: State<'_, Arc<dyn KeyboardBackend>>,
-) -> RuntimeState {
-    sync_backend_status(&state, backend.as_ref());
+fn get_status(state: State<'_, Arc<SharedState>>) -> RuntimeState {
     state.runtime()
 }
 
@@ -262,6 +263,7 @@ fn set_enabled(app: AppHandle, enabled: bool) -> Result<OperationResult, String>
 fn set_shortcut(app: AppHandle, shortcut: String) -> Result<OperationResult, String> {
     let parsed = parse_shortcut(&shortcut)?;
     let state = app.state::<Arc<SharedState>>();
+    let _operation = state.operation_lock.lock().map_err(|e| e.to_string())?;
     let old_value = state
         .config
         .lock()
@@ -290,7 +292,7 @@ fn set_shortcut(app: AppHandle, shortcut: String) -> Result<OperationResult, Str
         .lock()
         .map_err(|e| e.to_string())?
         .toggle_shortcut = shortcut;
-    if let Err(error) = state.save() {
+    if let Err(error) = state.save_locked() {
         let _ = manager.unregister_all();
         let restored = old_parsed
             .and_then(|old| manager.register(old).err())
@@ -317,6 +319,7 @@ fn reset_shortcut(app: AppHandle) -> Result<OperationResult, String> {
 #[tauri::command]
 fn set_launch_at_login(app: AppHandle, enabled: bool) -> Result<OperationResult, String> {
     let state = app.state::<Arc<SharedState>>();
+    let _operation = state.operation_lock.lock().map_err(|e| e.to_string())?;
     let old_config = state.config.lock().map_err(|e| e.to_string())?.clone();
     let old_autostart = app.autolaunch().is_enabled().map_err(|e| e.to_string())?;
     let operation = if enabled {
@@ -332,7 +335,7 @@ fn set_launch_at_login(app: AppHandle, enabled: bool) -> Result<OperationResult,
         .lock()
         .map_err(|e| e.to_string())?
         .launch_at_login = enabled;
-    if let Err(error) = state.save() {
+    if let Err(error) = state.save_locked() {
         let _ = if old_autostart {
             app.autolaunch().enable()
         } else {
@@ -356,6 +359,7 @@ fn get_permission_status(state: State<'_, Arc<SharedState>>) -> bool {
 #[tauri::command]
 fn refresh_permission(app: AppHandle) -> Result<OperationResult, String> {
     let state = app.state::<Arc<SharedState>>();
+    let _operation = state.operation_lock.lock().map_err(|e| e.to_string())?;
     let backend = app.state::<Arc<dyn KeyboardBackend>>();
     let granted = match backend.refresh_permission() {
         Ok(granted) => granted,
@@ -370,7 +374,7 @@ fn refresh_permission(app: AppHandle) -> Result<OperationResult, String> {
         return Ok(failure(&state, "仍未获得辅助功能权限"));
     }
     let operation = if state.config.lock().unwrap().enabled {
-        apply_enabled(&app, true)?
+        apply_enabled_locked(&app, &state, true)?
     } else {
         result(&state, true, None)
     };
@@ -388,6 +392,29 @@ fn open_accessibility_settings() -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+async fn open_help_window(app: AppHandle) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("help") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_always_on_top(true);
+        let _ = window.set_focus();
+        let _ = window.set_always_on_top(false);
+        return Ok(());
+    }
+
+    let window = WebviewWindowBuilder::new(&app, "help", WebviewUrl::App("help.html".into()))
+        .title("德语键盘辅助输入 - 帮助")
+        .inner_size(820.0, 620.0)
+        .resizable(true)
+        .build()
+        .map_err(|error| error.to_string())?;
+    let _ = window.set_always_on_top(true);
+    let _ = window.set_focus();
+    let _ = window.set_always_on_top(false);
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::parse_shortcut;
@@ -395,6 +422,8 @@ mod tests {
     #[test]
     fn parses_multi_modifier_shortcuts() {
         assert!(parse_shortcut("Ctrl+Shift+K").is_ok());
+        assert!(parse_shortcut("Ctrl+Shift+KeyK").is_ok());
+        assert!(parse_shortcut("Alt+Digit1").is_ok());
         assert!(parse_shortcut("Command+Option+K").is_ok());
         assert!(parse_shortcut("Alt+Shift+A").is_ok());
         assert!(parse_shortcut("Ctrl+F12").is_ok());

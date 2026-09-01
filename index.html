@@ -17,39 +17,44 @@
               <p class="subtitle">让美式键盘直接输入德语字符</p>
             </div>
           </div>
-          <span id="status-badge" class="badge" role="status" aria-live="polite">
-            <span class="status-dot" aria-hidden="true"></span>
-            <span id="status-label">关闭</span>
-          </span>
+          <div class="header-actions">
+            <div class="menu-wrap">
+              <button id="secondary-menu-toggle" class="icon-button" type="button" aria-label="打开更多菜单" aria-expanded="false" title="更多菜单">⋯</button>
+              <div id="secondary-menu" class="secondary-menu hidden" role="menu">
+                <button id="open-help" class="menu-item" type="button" role="menuitem">帮助</button>
+              </div>
+            </div>
+            <div class="status-cluster">
+              <div class="status-control">
+                <span id="status-badge" class="badge" role="status" aria-live="polite">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  <span id="status-label">关闭</span>
+                </span>
+                <label class="switch" aria-label="启用或关闭德语辅助映射">
+                  <input id="enabled" type="checkbox" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <p id="status-text">开启后，四个美式键位会输出德语字符。</p>
+            </div>
+          </div>
         </header>
 
-        <div class="top-grid">
-          <section class="pane shortcut-pane">
+        <section class="shortcut-panel">
+          <div class="shortcut-copy">
             <div class="section-kicker">快速切换</div>
             <h2>全局快捷键</h2>
             <p class="pane-description">使用快捷键开启或关闭映射。</p>
+          </div>
+          <div class="shortcut-controls">
             <div class="shortcut-row">
-              <input id="shortcut-input" value="Ctrl+K" aria-label="全局快捷键" />
+              <input id="shortcut-input" value="Ctrl+K" readonly aria-label="全局快捷键，点击后按下组合键录制" />
               <button id="save-shortcut" class="primary-button" type="button">保存</button>
               <button id="reset-shortcut" class="secondary-button" type="button">恢复</button>
             </div>
             <p id="shortcut-status" class="hint" aria-live="polite">快捷键用于切换辅助映射。</p>
-          </section>
-
-          <section class="pane mapping-pane">
-            <div class="mapping-pane-heading">
-              <div>
-                <div class="section-kicker">核心功能</div>
-                <h2>辅助映射</h2>
-              </div>
-              <label class="switch" aria-label="启用或关闭德语辅助映射">
-                <input id="enabled" type="checkbox" />
-                <span class="slider"></span>
-              </label>
-            </div>
-            <p id="status-text">开启后，四个美式键位会输出德语字符。</p>
-          </section>
-        </div>
+          </div>
+        </section>
 
         <section class="current-mapping">
           <div class="section-heading">

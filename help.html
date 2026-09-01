@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>德语键盘辅助输入 - 帮助</title>
+  </head>
+  <body class="help-page">
+    <main class="help-shell">
+      <header class="help-header">
+        <div>
+          <p class="eyebrow">GERMAN KEY ASSIST</p>
+          <h1>帮助</h1>
+          <p class="subtitle">了解德语键盘上的特殊字母位置和映射方式。</p>
+        </div>
+        <div class="help-menu-wrap">
+          <button id="help-menu-toggle" class="icon-button" type="button" aria-label="打开帮助菜单" aria-expanded="false" title="帮助菜单">⋯</button>
+          <div id="help-menu" class="secondary-menu help-menu hidden" role="menu">
+            <button id="back-to-main" class="menu-item" type="button" role="menuitem">返回主界面</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="help-section">
+        <div class="section-kicker">键盘位置</div>
+        <h2>德语字母在哪里？</h2>
+        <p>绿色键帽标出了德语键盘中常用的特殊字母位置。</p>
+        <figure class="keyboard-figure">
+          <img src="/images/german-keyboard-layout.png" alt="完整德语 QWERTZ 键盘，绿色键帽标出 ä、ö、ü 和 ß 的位置" />
+          <figcaption>German QWERTZ 键盘布局</figcaption>
+        </figure>
+      </section>
+
+      <section class="help-section mapping-explanation">
+        <div class="section-kicker">映射说明</div>
+        <h2>美式键位如何输出德语字符</h2>
+        <div class="help-mapping-list">
+          <div class="help-mapping-row"><span class="keycap">[</span><span class="arrow" aria-hidden="true">→</span><strong>ü</strong><span>按住 Shift 输出 Ü</span></div>
+          <div class="help-mapping-row"><span class="keycap">'</span><span class="arrow" aria-hidden="true">→</span><strong>ä</strong><span>按住 Shift 输出 Ä</span></div>
+          <div class="help-mapping-row"><span class="keycap">;</span><span class="arrow" aria-hidden="true">→</span><strong>ö</strong><span>按住 Shift 输出 Ö</span></div>
+          <div class="help-mapping-row"><span class="keycap">-</span><span class="arrow" aria-hidden="true">→</span><strong>ß</strong><span>按住 Shift 输出 ẞ</span></div>
+        </div>
+        <p class="help-note">映射只在辅助功能开启且按键没有被 Ctrl、Alt、Command、Option 或 Windows 等修饰键占用时生效。</p>
+      </section>
+    </main>
+    <script type="module" src="/src/help.ts"></script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-use super::{mapped_character, uppercase, BackendStatus, KeyboardBackend, TargetKey};
+use super::{mapping_character, BackendStatus, KeyboardBackend, TargetKey};
 use std::{
     collections::HashSet,
     ffi::c_void,
@@ -241,10 +241,15 @@ unsafe extern "C" fn event_callback(
     {
         return event;
     }
-    let character = mapped_character(
-        key,
-        uppercase(flags & FLAG_ALPHA_SHIFT != 0, flags & FLAG_SHIFT != 0),
-    );
+    let Some(character) = mapping_character(
+        Some(key),
+        true,
+        false,
+        flags & FLAG_ALPHA_SHIFT != 0,
+        flags & FLAG_SHIFT != 0,
+    ) else {
+        return event;
+    };
     let repeat = CGEventGetIntegerValueField(event, KCG_KEYBOARD_EVENT_AUTOREPEAT) != 0;
     if !post_unicode(character, repeat) {
         return event;

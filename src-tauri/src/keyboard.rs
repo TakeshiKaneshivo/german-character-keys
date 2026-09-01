@@ -26,6 +26,19 @@ pub fn uppercase(caps_lock: bool, shift: bool) -> bool {
     caps_lock ^ shift
 }
 
+pub fn mapping_character(
+    key: Option<TargetKey>,
+    enabled: bool,
+    blocking_modifier: bool,
+    caps_lock: bool,
+    shift: bool,
+) -> Option<char> {
+    if !enabled || blocking_modifier {
+        return None;
+    }
+    key.map(|key| mapped_character(key, uppercase(caps_lock, shift)))
+}
+
 #[derive(Clone, Debug, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum BackendStatus {
@@ -112,5 +125,26 @@ mod tests {
         assert!(uppercase(false, true));
         assert!(uppercase(true, false));
         assert!(!uppercase(true, true));
+    }
+
+    #[test]
+    fn mapping_decision_respects_state_and_modifiers() {
+        assert_eq!(
+            mapping_character(Some(TargetKey::Semicolon), true, false, false, true),
+            Some('Ö')
+        );
+        assert_eq!(
+            mapping_character(Some(TargetKey::Semicolon), true, false, true, true),
+            Some('ö')
+        );
+        assert_eq!(
+            mapping_character(Some(TargetKey::Semicolon), false, false, false, false),
+            None
+        );
+        assert_eq!(
+            mapping_character(Some(TargetKey::Semicolon), true, true, false, false),
+            None
+        );
+        assert_eq!(mapping_character(None, true, false, false, false), None);
     }
 }

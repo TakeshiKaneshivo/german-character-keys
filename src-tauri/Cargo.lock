@@ -1299,7 +1299,6 @@ dependencies = [
  "tauri-plugin-autostart",
  "tauri-plugin-global-shortcut",
  "tauri-plugin-single-instance",
- "thiserror 2.0.20",
  "windows-sys 0.59.0",
 ]
 

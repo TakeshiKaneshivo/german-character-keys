@@ -47,6 +47,7 @@ pub struct RuntimeState {
 
 pub struct SharedState {
     pub config: Mutex<AppConfig>,
+    pub operation_lock: Mutex<()>,
     pub enabled: Arc<std::sync::atomic::AtomicBool>,
     pub shortcut_registered: Mutex<bool>,
     pub accessibility_granted: Mutex<bool>,
@@ -57,6 +58,8 @@ pub struct SharedState {
 
 impl SharedState {
     pub fn load(config_path: PathBuf) -> Self {
+        let temp_path = config_path.with_extension("json.tmp");
+        let _ = fs::remove_file(&temp_path);
         let config: AppConfig = fs::read_to_string(&config_path)
             .ok()
             .and_then(|contents| serde_json::from_str(&contents).ok())
@@ -64,6 +67,7 @@ impl SharedState {
         let enabled = Arc::new(std::sync::atomic::AtomicBool::new(config.enabled));
         Self {
             config: Mutex::new(config),
+            operation_lock: Mutex::new(()),
             enabled,
             shortcut_registered: Mutex::new(false),
             accessibility_granted: Mutex::new(!cfg!(target_os = "macos")),
@@ -78,21 +82,31 @@ impl SharedState {
     }
 
     pub fn save(&self) -> Result<(), String> {
-        let contents =
-            serde_json::to_string_pretty(&*self.config.lock().map_err(|e| e.to_string())?)
-                .map_err(|e| e.to_string())?;
+        let _operation = self.operation_lock.lock().map_err(|e| e.to_string())?;
+        self.save_locked()
+    }
+
+    pub(crate) fn save_locked(&self) -> Result<(), String> {
+        let config = self.config.lock().map_err(|e| e.to_string())?.clone();
+        let contents = serde_json::to_string_pretty(&config).map_err(|e| e.to_string())?;
         let temp_path = self.config_path.with_extension("json.tmp");
-        let mut file = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(&temp_path)
-            .map_err(|e| e.to_string())?;
-        file.write_all(contents.as_bytes())
-            .map_err(|e| e.to_string())?;
-        file.sync_all().map_err(|e| e.to_string())?;
-        drop(file);
-        replace_config(&temp_path, &self.config_path)
+        let write_result = (|| {
+            let mut file = OpenOptions::new()
+                .create(true)
+                .truncate(true)
+                .write(true)
+                .open(&temp_path)
+                .map_err(|e| e.to_string())?;
+            file.write_all(contents.as_bytes())
+                .map_err(|e| e.to_string())?;
+            file.sync_all().map_err(|e| e.to_string())?;
+            drop(file);
+            replace_config(&temp_path, &self.config_path)
+        })();
+        if write_result.is_err() {
+            let _ = fs::remove_file(&temp_path);
+        }
+        write_result
     }
 
     pub fn runtime(&self) -> RuntimeState {
@@ -194,6 +208,43 @@ mod tests {
             state.config.lock().unwrap().toggle_shortcut,
             default_shortcut()
         );
+        let _ = fs::remove_file(path);
+    }
+
+    #[test]
+    fn load_removes_stale_temp_file() {
+        let path = std::env::temp_dir().join(format!(
+            "german-key-assist-stale-{}.json",
+            std::process::id()
+        ));
+        let temp_path = path.with_extension("json.tmp");
+        fs::write(&temp_path, b"stale").unwrap();
+        let _state = SharedState::load(path.clone());
+        assert!(!temp_path.exists());
+        let _ = fs::remove_file(path);
+    }
+
+    #[test]
+    fn concurrent_saves_write_valid_json_snapshots() {
+        let path = std::env::temp_dir().join(format!(
+            "german-key-assist-concurrent-{}.json",
+            std::process::id()
+        ));
+        let state = Arc::new(SharedState::load(path.clone()));
+        let mut workers = Vec::new();
+        for enabled in [true, false, true, false] {
+            let state = Arc::clone(&state);
+            workers.push(std::thread::spawn(move || {
+                state.config.lock().unwrap().enabled = enabled;
+                state.save().unwrap();
+            }));
+        }
+        for worker in workers {
+            worker.join().unwrap();
+        }
+        let contents = fs::read_to_string(&path).unwrap();
+        let parsed: AppConfig = serde_json::from_str(&contents).unwrap();
+        assert!(!parsed.toggle_shortcut.is_empty());
         let _ = fs::remove_file(path);
     }
 }

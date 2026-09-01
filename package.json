@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "format": "cargo fmt --manifest-path src-tauri/Cargo.toml",
+    "format:check": "cargo fmt --manifest-path src-tauri/Cargo.toml -- --check",
+    "test": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "check": "npm run format:check && npm run test && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings && npm run build",
     "build:windows-release": "tauri build --bundles nsis",
     "build:macos-release": "tauri build --target aarch64-apple-darwin --bundles dmg",
     "tauri": "tauri"

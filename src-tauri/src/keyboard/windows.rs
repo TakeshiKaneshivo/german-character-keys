@@ -1,4 +1,4 @@
-use super::{mapped_character, uppercase, BackendStatus, KeyboardBackend, TargetKey};
+use super::{mapping_character, BackendStatus, KeyboardBackend, TargetKey};
 use std::{
     collections::HashSet,
     mem::size_of,
@@ -193,9 +193,14 @@ unsafe extern "system" fn hook_proc(code: i32, w_param: WPARAM, l_param: LPARAM)
     }
     let caps = state.caps_lock.load(Ordering::Relaxed);
     let shift = (GetAsyncKeyState(VK_SHIFT as i32) as u16 & 0x8000) != 0;
-    let character = mapped_character(key, uppercase(caps, shift));
-    if !inject_unicode_without_shift(character) {
+    let Some(character) = mapping_character(Some(key), true, blocking, caps, shift) else {
         return CallNextHookEx(std::ptr::null_mut(), code, w_param, l_param);
+    };
+    match inject_unicode_without_shift(character) {
+        InjectionOutcome::NotSent => {
+            return CallNextHookEx(std::ptr::null_mut(), code, w_param, l_param)
+        }
+        InjectionOutcome::Sent => {}
     }
     state.intercepted.lock().unwrap().insert(key);
     1
@@ -229,7 +234,13 @@ unsafe fn has_blocking_modifier() -> bool {
         .any(|key| GetAsyncKeyState(*key as i32) as u16 & 0x8000 != 0)
 }
 
-unsafe fn inject_unicode_without_shift(character: char) -> bool {
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum InjectionOutcome {
+    NotSent,
+    Sent,
+}
+
+unsafe fn inject_unicode_without_shift(character: char) -> InjectionOutcome {
     let shifts = [
         (
             VK_LSHIFT,
@@ -245,11 +256,18 @@ unsafe fn inject_unicode_without_shift(character: char) -> bool {
         .filter_map(|(key, down)| down.then_some(*key))
         .collect();
     if !pressed.is_empty() && !inject_shift_events(&pressed, true) {
-        return false;
+        let _ = inject_shift_events(&pressed, false);
+        return InjectionOutcome::NotSent;
     }
     let injected = inject_unicode(character);
-    let restored = pressed.is_empty() || inject_shift_events(&pressed, false);
-    injected && restored
+    if !injected {
+        let _ = pressed.is_empty() || inject_shift_events(&pressed, false);
+        return InjectionOutcome::NotSent;
+    }
+    if !pressed.is_empty() && !inject_shift_events(&pressed, false) {
+        let _ = inject_shift_events(&pressed, false);
+    }
+    InjectionOutcome::Sent
 }
 
 unsafe fn inject_shift_events(keys: &[u16], key_up: bool) -> bool {
@@ -268,6 +286,10 @@ unsafe fn inject_shift_events(keys: &[u16], key_up: bool) -> bool {
             },
         })
         .collect();
+    send_inputs(&inputs)
+}
+
+unsafe fn send_inputs(inputs: &[INPUT]) -> bool {
     SendInput(
         inputs.len() as u32,
         inputs.as_ptr(),
@@ -289,9 +311,5 @@ unsafe fn inject_unicode(character: char) -> bool {
         },
     };
     let inputs = [input(0), input(KEYEVENTF_KEYUP)];
-    SendInput(
-        inputs.len() as u32,
-        inputs.as_ptr(),
-        size_of::<INPUT>() as i32,
-    ) == inputs.len() as u32
+    send_inputs(&inputs)
 }
