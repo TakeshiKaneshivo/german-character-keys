@@ -38,6 +38,7 @@ pub fn run() {
             get_permission_status,
             refresh_permission,
             open_accessibility_settings,
+            quit_app,
             open_help_window
         ])
         .run(tauri::generate_context!())
@@ -389,6 +390,12 @@ fn open_accessibility_settings() -> Result<(), String> {
         .arg("x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")
         .spawn()
         .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+fn quit_app(app: AppHandle) -> Result<(), String> {
+    app.exit(0);
     Ok(())
 }
 

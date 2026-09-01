@@ -7,62 +7,71 @@
   </head>
   <body>
     <main class="panel">
-      <div class="layout-frame">
+      <div id="app-content" class="layout-frame">
         <header class="header">
           <div class="brand-lockup">
-            <div class="app-mark" aria-hidden="true">⌨</div>
+            <div class="brand-rail">
+              <div class="language-wrap">
+                <button id="language-toggle" class="app-mark language-button" type="button" aria-expanded="false" aria-haspopup="menu">SC</button>
+                <div id="language-menu" class="language-menu hidden" role="menu">
+                  <button class="language-item" type="button" role="menuitem" data-language="zh-CN"><b>SC</b><span data-i18n="languageSimplified">简体中文</span></button>
+                  <button class="language-item" type="button" role="menuitem" data-language="zh-TW"><b>TC</b><span data-i18n="languageTraditional">繁體中文</span></button>
+                  <button class="language-item" type="button" role="menuitem" data-language="en"><b>EN</b><span data-i18n="languageEnglish">English</span></button>
+                  <button class="language-item" type="button" role="menuitem" data-language="de"><b>DE</b><span data-i18n="languageGerman">Deutsch</span></button>
+                </div>
+              </div>
+              <div class="menu-wrap">
+                <button id="secondary-menu-toggle" class="icon-button" type="button" data-i18n-aria-label="moreMenuLabel" data-i18n-title="moreMenuLabel" aria-expanded="false">⋯</button>
+                <div id="secondary-menu" class="secondary-menu hidden" role="menu">
+                  <button id="open-help" class="menu-item" type="button" role="menuitem" data-i18n="helpMenuItem">帮助</button>
+                </div>
+              </div>
+            </div>
             <div>
-              <p class="eyebrow">GERMAN KEY ASSIST</p>
-              <h1>德语键盘辅助输入</h1>
-              <p class="subtitle">让美式键盘直接输入德语字符</p>
+            <p class="eyebrow" data-i18n="brandEyebrow">GERMAN KEY ASSIST</p>
+            <h1 data-i18n="appTitle" data-i18n-title="appTitle">德语键盘辅助输入</h1>
+            <p class="subtitle" data-i18n="appSubtitle" data-i18n-title="appSubtitleFull">让美式键盘直接输入德语字符</p>
             </div>
           </div>
           <div class="header-actions">
-            <div class="menu-wrap">
-              <button id="secondary-menu-toggle" class="icon-button" type="button" aria-label="打开更多菜单" aria-expanded="false" title="更多菜单">⋯</button>
-              <div id="secondary-menu" class="secondary-menu hidden" role="menu">
-                <button id="open-help" class="menu-item" type="button" role="menuitem">帮助</button>
-              </div>
-            </div>
             <div class="status-cluster">
               <div class="status-control">
                 <span id="status-badge" class="badge" role="status" aria-live="polite">
                   <span class="status-dot" aria-hidden="true"></span>
-                  <span id="status-label">关闭</span>
+                  <span id="status-label" data-i18n="statusOff">关闭</span>
                 </span>
-                <label class="switch" aria-label="启用或关闭德语辅助映射">
+                <label class="switch" data-i18n-aria-label="toggleMappingLabel">
                   <input id="enabled" type="checkbox" />
                   <span class="slider"></span>
                 </label>
               </div>
-              <p id="status-text">开启后，四个美式键位会输出德语字符。</p>
+              <p id="status-text" data-i18n="statusDisabled">开启后，四个美式键位会输出德语字符。</p>
             </div>
           </div>
         </header>
 
         <section class="shortcut-panel">
           <div class="shortcut-copy">
-            <div class="section-kicker">快速切换</div>
-            <h2>全局快捷键</h2>
-            <p class="pane-description">使用快捷键开启或关闭映射。</p>
+            <div class="section-kicker" data-i18n="shortcutKicker">快速切换</div>
+            <h2 data-i18n="globalShortcut" data-i18n-title="globalShortcutFull">全局快捷键</h2>
+            <p class="pane-description" data-i18n="shortcutDescription" data-i18n-title="shortcutDescriptionFull">使用快捷键开启或关闭映射。</p>
           </div>
           <div class="shortcut-controls">
             <div class="shortcut-row">
-              <input id="shortcut-input" value="Ctrl+K" readonly aria-label="全局快捷键，点击后按下组合键录制" />
-              <button id="save-shortcut" class="primary-button" type="button">保存</button>
-              <button id="reset-shortcut" class="secondary-button" type="button">恢复</button>
+              <input id="shortcut-input" value="Ctrl+K" readonly data-i18n-aria-label="shortcutAriaLabel" />
+              <button id="reset-shortcut" class="secondary-button" type="button" data-i18n="reset">恢复</button>
             </div>
-            <p id="shortcut-status" class="hint" aria-live="polite">快捷键用于切换辅助映射。</p>
+            <p id="shortcut-status" class="hint" aria-live="polite" data-i18n="shortcutHint" data-i18n-title="shortcutHintFull">快捷键用于切换辅助映射。</p>
           </div>
         </section>
 
         <section class="current-mapping">
           <div class="section-heading">
             <div>
-              <div class="section-kicker">键位速查</div>
-              <h2>当前映射</h2>
+              <div class="section-kicker" data-i18n="mappingKicker">键位速查</div>
+              <h2 data-i18n="currentMapping">当前映射</h2>
             </div>
-            <span class="mapping-count">4 组键位</span>
+            <span class="mapping-count" data-i18n="mappingCount">4 组键位</span>
           </div>
           <div class="mapping-grid">
             <div class="mapping-item"><span class="keycap">[</span><span class="arrow" aria-hidden="true">→</span><strong class="output-key">ü</strong></div>
@@ -72,25 +81,29 @@
           </div>
         </section>
 
-        <section id="permission-section" class="permission hidden" aria-live="polite">
-          <div class="permission-icon" aria-hidden="true">!</div>
-          <div class="permission-copy">
-            <h2>需要辅助功能权限</h2>
-            <p>macOS 需要允许本应用监控键盘事件，才能启用映射。</p>
-            <div class="permission-actions">
-              <button id="open-permissions" class="primary-button" type="button">打开系统设置</button>
-              <button id="refresh-permission" class="secondary-button" type="button">重新检测权限</button>
-            </div>
-          </div>
-        </section>
-
         <footer>
           <label class="login-option">
             <input id="launch-at-login" type="checkbox" />
-            <span>登录时自动启动</span>
+          <span data-i18n="autoLaunch" data-i18n-title="autoLaunch">登录时自动启动</span>
           </label>
           <span id="platform-label" class="platform-label"></span>
         </footer>
+      </div>
+      <div id="permission-overlay" class="permission-overlay hidden" role="presentation">
+        <section id="permission-dialog" class="permission-dialog" role="dialog" aria-modal="true" aria-labelledby="permission-title" aria-describedby="permission-description">
+          <div class="permission-icon" aria-hidden="true">!</div>
+          <div class="permission-copy">
+            <h2 id="permission-title" data-i18n="permissionTitle">需要辅助功能权限</h2>
+            <p id="permission-description" data-i18n="permissionDescription">macOS 需要允许本应用监控键盘事件，才能启用映射。</p>
+            <p class="permission-instruction" data-i18n="permissionInstruction">请在“系统设置 → 隐私与安全性 → 辅助功能”中允许本应用，然后返回这里重新检测。</p>
+            <p id="permission-feedback" class="permission-feedback" aria-live="polite"></p>
+            <div class="permission-actions">
+              <button id="open-permissions" class="primary-button" type="button" data-i18n="openSettings">打开系统设置</button>
+              <button id="refresh-permission" class="secondary-button" type="button" data-i18n="refreshPermission">重新检测权限</button>
+              <button id="quit-app" class="secondary-button" type="button" data-i18n="quitApp">退出应用</button>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
     <script type="module" src="/src/main.ts"></script>

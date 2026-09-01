@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { applyTranslations, bindLanguageMenu, t } from "./i18n";
 import "./styles.css";
 
 type Status = {
@@ -21,16 +22,23 @@ const statusLabel = document.querySelector<HTMLElement>("#status-label")!;
 const statusText = document.querySelector<HTMLElement>("#status-text")!;
 const shortcutInput = document.querySelector<HTMLInputElement>("#shortcut-input")!;
 const shortcutStatus = document.querySelector<HTMLElement>("#shortcut-status")!;
-const permissionSection = document.querySelector<HTMLElement>("#permission-section")!;
+const appContent = document.querySelector<HTMLElement>("#app-content")!;
+const permissionOverlay = document.querySelector<HTMLElement>("#permission-overlay")!;
+const permissionFeedback = document.querySelector<HTMLElement>("#permission-feedback")!;
+const refreshPermissionButton = document.querySelector<HTMLButtonElement>("#refresh-permission")!;
 const platformLabel = document.querySelector<HTMLElement>("#platform-label")!;
 const menuWrap = document.querySelector<HTMLElement>(".menu-wrap")!;
 const menuToggle = document.querySelector<HTMLButtonElement>("#secondary-menu-toggle")!;
 const secondaryMenu = document.querySelector<HTMLElement>("#secondary-menu")!;
 const openHelp = document.querySelector<HTMLButtonElement>("#open-help")!;
+const languageToggle = document.querySelector<HTMLButtonElement>("#language-toggle")!;
+const languageMenu = document.querySelector<HTMLElement>("#language-menu")!;
 
 let committedShortcut = "";
 let pendingShortcut = "";
 let recordingShortcut = false;
+let currentStatus: Status | null = null;
+let permissionGateVisible = false;
 
 const supportedCodes = new Set([
   ...Array.from({ length: 26 }, (_, index) => `Key${String.fromCharCode(65 + index)}`),
@@ -76,18 +84,31 @@ function startRecording() {
   if (recordingShortcut) return;
   recordingShortcut = true;
   shortcutInput.classList.add("recording");
-  shortcutInput.value = "按下组合键…";
-  setRecordingMessage("请按下至少包含一个修饰键的组合键。" );
+  shortcutInput.value = t("recording");
+  setRecordingMessage(t("saveRecorded"));
 }
 
 function cancelRecording() {
   recordingShortcut = false;
   shortcutInput.classList.remove("recording");
   shortcutInput.value = formatShortcut(pendingShortcut || committedShortcut);
-  setRecordingMessage("快捷键用于切换辅助映射。");
+  setRecordingMessage(t("shortcutHint"));
 }
 
-function captureShortcut(event: KeyboardEvent) {
+function setPermissionGate(status: Status) {
+  const blocked = status.platform === "macos" && !status.accessibility_granted;
+  permissionOverlay.classList.toggle("hidden", !blocked);
+  appContent.inert = blocked;
+  appContent.setAttribute("aria-hidden", String(blocked));
+  if (blocked && !permissionGateVisible) {
+    permissionGateVisible = true;
+    refreshPermissionButton.focus();
+  } else if (!blocked) {
+    permissionGateVisible = false;
+  }
+}
+
+async function captureShortcut(event: KeyboardEvent) {
   if (!recordingShortcut) return;
   event.preventDefault();
   event.stopPropagation();
@@ -110,12 +131,12 @@ function captureShortcut(event: KeyboardEvent) {
   }
 
   if (modifierTokens.length === 0) {
-    setRecordingMessage("请至少使用一个修饰键，例如 Ctrl、Alt、Shift 或 Command。", true);
+    setRecordingMessage(t("requiresModifier"), true);
     return;
   }
 
   if (!supportedCodes.has(event.code) || ["ControlLeft", "ControlRight", "AltLeft", "AltRight", "ShiftLeft", "ShiftRight", "MetaLeft", "MetaRight"].includes(event.code)) {
-    setRecordingMessage(`无法识别按键：${event.code}`, true);
+    setRecordingMessage(t("unknownKey", { key: event.code }), true);
     return;
   }
 
@@ -123,36 +144,47 @@ function captureShortcut(event: KeyboardEvent) {
   shortcutInput.value = formatShortcut(pendingShortcut);
   recordingShortcut = false;
   shortcutInput.classList.remove("recording");
-  setRecordingMessage("快捷键已记录，点击“保存”完成注册。" );
+  setRecordingMessage(t("recorded"));
+  await runOperation("set_shortcut", { shortcut: pendingShortcut });
 }
 
 function render(status: Status) {
+  currentStatus = status;
   enabled.checked = status.enabled;
-  statusLabel.textContent = status.enabled ? "开启" : "关闭";
+  statusLabel.textContent = status.enabled ? t("statusOn") : t("statusOff");
   statusBadge.className = `badge ${status.enabled ? "on" : ""}`;
   statusText.textContent = status.enabled
-    ? "四个美式键位正在输出德语字符。"
-    : "开启后，四个美式键位会输出德语字符。";
+    ? t("statusEnabled")
+    : t("statusDisabled");
+  statusText.title = status.enabled
+    ? t("statusEnabledFull")
+    : t("statusDisabledFull");
   committedShortcut = status.shortcut;
   if (!recordingShortcut) {
     pendingShortcut = status.shortcut;
     shortcutInput.value = formatShortcut(status.shortcut);
   }
   shortcutStatus.textContent = status.shortcut_registered
-    ? "快捷键已注册。"
-    : "快捷键不可用，请更换其他组合；托盘菜单仍可使用。";
+    ? t("shortcutRegistered")
+    : t("shortcutUnavailable");
   shortcutStatus.className = "hint";
   platformLabel.textContent = status.platform;
   launchAtLogin.checked = status.launch_at_login;
-  permissionSection.classList.toggle("hidden", status.accessibility_granted);
+  setPermissionGate(status);
 }
 
 function renderOperation(operation: OperationResult) {
   render(operation.status);
   if (operation.message) {
     statusText.textContent = operation.message;
+    statusText.title = operation.message;
     shortcutStatus.textContent = operation.message;
+    shortcutStatus.title = operation.message;
     shortcutStatus.className = `hint ${operation.success ? "" : "error"}`;
+    if (permissionGateVisible) {
+      permissionFeedback.textContent = operation.message;
+      permissionFeedback.className = `permission-feedback ${operation.success ? "" : "error"}`;
+    }
   }
 }
 
@@ -194,16 +226,12 @@ document.querySelector("#reset-shortcut")!.addEventListener("click", async () =>
   await runOperation("reset_shortcut");
 });
 
-document.querySelector("#save-shortcut")!.addEventListener("click", async () => {
-  if (!pendingShortcut) {
-    setRecordingMessage("请先录制一个快捷键。", true);
-    return;
-  }
-  await runOperation("set_shortcut", { shortcut: pendingShortcut });
-});
-
 menuToggle.addEventListener("click", () => {
   setMenuOpen(secondaryMenu.classList.contains("hidden"));
+});
+
+languageToggle.addEventListener("click", () => {
+  setMenuOpen(false);
 });
 
 openHelp.addEventListener("click", async () => {
@@ -229,11 +257,35 @@ document.querySelector("#open-permissions")!.addEventListener("click", async () 
     await invoke("open_accessibility_settings");
   } catch (error) {
     console.error(error);
+    permissionFeedback.textContent = String(error);
+    permissionFeedback.className = "permission-feedback error";
   }
 });
 
-document.querySelector("#refresh-permission")!.addEventListener("click", async () => {
-  await runOperation("refresh_permission");
+refreshPermissionButton.addEventListener("click", async () => {
+  refreshPermissionButton.disabled = true;
+  permissionFeedback.textContent = "";
+  permissionFeedback.className = "permission-feedback";
+  try {
+    await runOperation("refresh_permission");
+  } finally {
+    refreshPermissionButton.disabled = false;
+  }
+});
+
+document.querySelector("#quit-app")!.addEventListener("click", async () => {
+  try {
+    await invoke("quit_app");
+  } catch (error) {
+    console.error(error);
+    permissionFeedback.textContent = String(error);
+    permissionFeedback.className = "permission-feedback error";
+  }
+});
+
+bindLanguageMenu(languageToggle, languageMenu, () => {
+  if (currentStatus) render(currentStatus);
+  applyTranslations(document);
 });
 
 refresh().catch(console.error);

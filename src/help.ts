@@ -1,10 +1,13 @@
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { applyTranslations, bindLanguageMenu } from "./i18n";
 import "./styles.css";
 
 const helpMenuToggle = document.querySelector<HTMLButtonElement>("#help-menu-toggle")!;
 const helpMenu = document.querySelector<HTMLElement>("#help-menu")!;
 const helpMenuWrap = document.querySelector<HTMLElement>(".help-menu-wrap")!;
 const backToMain = document.querySelector<HTMLButtonElement>("#back-to-main")!;
+const languageToggle = document.querySelector<HTMLButtonElement>("#language-toggle")!;
+const languageMenu = document.querySelector<HTMLElement>("#language-menu")!;
 
 function setMenuOpen(open: boolean) {
   helpMenu.classList.toggle("hidden", !open);
@@ -13,6 +16,10 @@ function setMenuOpen(open: boolean) {
 
 helpMenuToggle.addEventListener("click", () => {
   setMenuOpen(helpMenu.classList.contains("hidden"));
+});
+
+languageToggle.addEventListener("click", () => {
+  setMenuOpen(false);
 });
 
 document.addEventListener("click", (event) => {
@@ -33,3 +40,5 @@ backToMain.addEventListener("click", async () => {
   }
   await WebviewWindow.getCurrent().close();
 });
+
+bindLanguageMenu(languageToggle, languageMenu, () => applyTranslations(document));
