@@ -7,8 +7,8 @@ export const LANGUAGE_OPTIONS: Array<{ code: Language; abbreviation: string; lab
   { code: "de", abbreviation: "DE", label: "Deutsch" },
 ];
 
-type TranslationKey =
-  | "brandEyebrow" | "appTitle" | "appSubtitle" | "appSubtitleFull" | "languageMenuLabel" | "moreMenuLabel" | "helpMenuItem" | "toggleMappingLabel" | "shortcutAriaLabel"
+export type TranslationKey =
+  | "brandEyebrow" | "appTitle" | "appSubtitle" | "appSubtitleFull" | "languageMenuLabel" | "closeHelp" | "moreMenuLabel" | "helpMenuItem" | "toggleMappingLabel" | "shortcutAriaLabel"
   | "statusOn" | "statusOff" | "statusEnabled" | "statusDisabled" | "statusEnabledFull" | "statusDisabledFull"
   | "shortcutKicker" | "globalShortcut" | "globalShortcutFull" | "shortcutDescription" | "shortcutDescriptionFull" | "save" | "reset" | "shortcutHint" | "shortcutHintFull"
   | "shortcutRegistered" | "shortcutUnavailable" | "mappingKicker" | "currentMapping" | "mappingCount"
@@ -20,10 +20,10 @@ type TranslationKey =
 
 type TranslationTable = Record<TranslationKey, string>;
 
-const translations: Record<Language, TranslationTable> = {
+export const translations: Record<Language, TranslationTable> = {
   "zh-CN": {
     brandEyebrow: "GERMAN KEY ASSIST", appTitle: "德语键盘辅助输入", appSubtitle: "美式键盘输入德语字符", appSubtitleFull: "让美式键盘直接输入德语字符",
-    languageMenuLabel: "选择语言", moreMenuLabel: "打开更多菜单", helpMenuItem: "帮助", toggleMappingLabel: "启用或关闭德语辅助映射", shortcutAriaLabel: "全局快捷键，点击后按下组合键录制",
+    languageMenuLabel: "选择语言", closeHelp: "关闭帮助窗口", moreMenuLabel: "打开更多菜单", helpMenuItem: "帮助", toggleMappingLabel: "启用或关闭德语辅助映射", shortcutAriaLabel: "全局快捷键，点击后按下组合键录制",
     statusOn: "开启", statusOff: "关闭", statusEnabled: "映射已开启", statusDisabled: "映射已关闭", statusEnabledFull: "四个美式键位正在输出德语字符。", statusDisabledFull: "开启后，四个美式键位会输出德语字符。",
     shortcutKicker: "快速切换", globalShortcut: "全局快捷键", globalShortcutFull: "全局快捷键", shortcutDescription: "快捷键切换映射", shortcutDescriptionFull: "使用快捷键开启或关闭映射。", save: "保存", reset: "恢复", shortcutHint: "快捷键切换辅助映射", shortcutHintFull: "快捷键用于切换辅助映射。",
     shortcutRegistered: "快捷键已注册。", shortcutUnavailable: "快捷键不可用，请更换其他组合；托盘菜单仍可使用。",
@@ -35,7 +35,7 @@ const translations: Record<Language, TranslationTable> = {
   },
   "zh-TW": {
     brandEyebrow: "GERMAN KEY ASSIST", appTitle: "德語鍵盤輔助輸入", appSubtitle: "用美式鍵盤輸入德語字元", appSubtitleFull: "用美式鍵盤直接輸入德語字元",
-    languageMenuLabel: "選擇語言", moreMenuLabel: "開啟更多選單", helpMenuItem: "說明", toggleMappingLabel: "啟用或關閉德語輔助映射", shortcutAriaLabel: "全域快速鍵，點擊後按下組合鍵錄製",
+    languageMenuLabel: "選擇語言", closeHelp: "關閉說明視窗", moreMenuLabel: "開啟更多選單", helpMenuItem: "說明", toggleMappingLabel: "啟用或關閉德語輔助映射", shortcutAriaLabel: "全域快速鍵，點擊後按下組合鍵錄製",
     statusOn: "開啟", statusOff: "關閉", statusEnabled: "映射已開啟", statusDisabled: "映射已關閉", statusEnabledFull: "四個美式鍵位正在輸出德語字元。", statusDisabledFull: "開啟後，四個美式鍵位會輸出德語字元。",
     shortcutKicker: "快速切換", globalShortcut: "全域快速鍵", globalShortcutFull: "全域快速鍵", shortcutDescription: "快速鍵切換映射", shortcutDescriptionFull: "使用快速鍵開啟或關閉映射。", save: "儲存", reset: "還原", shortcutHint: "快速鍵切換輔助映射", shortcutHintFull: "快速鍵用於切換輔助映射。",
     shortcutRegistered: "快速鍵已註冊。", shortcutUnavailable: "快速鍵無法使用，請更換其他組合；仍可使用系統匣選單。",
@@ -47,7 +47,7 @@ const translations: Record<Language, TranslationTable> = {
   },
   en: {
     brandEyebrow: "GERMAN KEY ASSIST", appTitle: "German Key Assist", appSubtitle: "German letters via ANSI keyboard", appSubtitleFull: "Type German characters with an ANSI keyboard",
-    languageMenuLabel: "Choose language", moreMenuLabel: "Open more menu", helpMenuItem: "Help", toggleMappingLabel: "Enable or disable German character mapping", shortcutAriaLabel: "Global shortcut; click and press a key combination to record it",
+    languageMenuLabel: "Choose language", closeHelp: "Close help window", moreMenuLabel: "Open more menu", helpMenuItem: "Help", toggleMappingLabel: "Enable or disable German character mapping", shortcutAriaLabel: "Global shortcut; click and press a key combination to record it",
     statusOn: "On", statusOff: "Off", statusEnabled: "Mapping on", statusDisabled: "Mapping off", statusEnabledFull: "The four mapped keys are outputting German characters.", statusDisabledFull: "Turn this on to output German characters from four ANSI keys.",
     shortcutKicker: "Quick toggle", globalShortcut: "Global shortcut", globalShortcutFull: "Global shortcut", shortcutDescription: "Shortcut toggles mapping", shortcutDescriptionFull: "Use a shortcut to turn mapping on or off.", save: "Save", reset: "Reset", shortcutHint: "Shortcut toggles mapping", shortcutHintFull: "The shortcut toggles German character mapping.",
     shortcutRegistered: "Shortcut registered.", shortcutUnavailable: "Shortcut unavailable. Choose another combination; the tray menu remains available.",
@@ -59,7 +59,7 @@ const translations: Record<Language, TranslationTable> = {
   },
   de: {
     brandEyebrow: "GERMAN KEY ASSIST", appTitle: "Deutsche Tastaturhilfe", appSubtitle: "Deutsche Zeichen per ANSI-Tastatur", appSubtitleFull: "Deutsche Zeichen mit einer ANSI-Tastatur eingeben",
-    languageMenuLabel: "Sprache auswählen", moreMenuLabel: "Weitere Optionen öffnen", helpMenuItem: "Hilfe", toggleMappingLabel: "Deutsche Zeichen-Zuordnung ein- oder ausschalten", shortcutAriaLabel: "Globale Tastenkombination; klicken und Kombination drücken, um sie aufzuzeichnen",
+    languageMenuLabel: "Sprache auswählen", closeHelp: "Hilfe schließen", moreMenuLabel: "Weitere Optionen öffnen", helpMenuItem: "Hilfe", toggleMappingLabel: "Deutsche Zeichen-Zuordnung ein- oder ausschalten", shortcutAriaLabel: "Globale Tastenkombination; klicken und Kombination drücken, um sie aufzuzeichnen",
     statusOn: "Ein", statusOff: "Aus", statusEnabled: "Mapping aktiv", statusDisabled: "Mapping aus", statusEnabledFull: "Die vier zugeordneten Tasten geben deutsche Zeichen aus.", statusDisabledFull: "Aktivieren, um deutsche Zeichen über vier ANSI-Tasten einzugeben.",
     shortcutKicker: "Schnellumschaltung", globalShortcut: "Globaler Shortcut", globalShortcutFull: "Globale Tastenkombination", shortcutDescription: "Zuordnung umschalten", shortcutDescriptionFull: "Mit der Tastenkombination die Zuordnung ein- oder ausschalten.", save: "Speichern", reset: "Zurücksetzen", shortcutHint: "Shortcut schaltet Mapping um", shortcutHintFull: "Die Tastenkombination schaltet die Zeichen-Zuordnung um.",
     shortcutRegistered: "Tastenkombination registriert.", shortcutUnavailable: "Tastenkombination nicht verfügbar. Bitte eine andere Kombination wählen; das Tray-Menü bleibt verfügbar.",

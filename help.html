@@ -6,54 +6,7 @@
     <title>德语键盘辅助输入 - 帮助</title>
   </head>
   <body class="help-page">
-    <main class="help-shell">
-      <header class="help-header">
-        <div>
-          <p class="eyebrow" data-i18n="brandEyebrow">GERMAN KEY ASSIST</p>
-          <h1 data-i18n="helpTitle">帮助</h1>
-          <p class="subtitle" data-i18n="helpSubtitle">了解德语键盘上的特殊字母位置和映射方式。</p>
-        </div>
-        <div class="help-header-actions">
-          <div class="language-wrap">
-            <button id="language-toggle" class="app-mark language-button" type="button" aria-expanded="false" aria-haspopup="menu">SC</button>
-            <div id="language-menu" class="language-menu hidden" role="menu">
-              <button class="language-item" type="button" role="menuitem" data-language="zh-CN"><b>SC</b><span data-i18n="languageSimplified">简体中文</span></button>
-              <button class="language-item" type="button" role="menuitem" data-language="zh-TW"><b>TC</b><span data-i18n="languageTraditional">繁體中文</span></button>
-              <button class="language-item" type="button" role="menuitem" data-language="en"><b>EN</b><span data-i18n="languageEnglish">English</span></button>
-              <button class="language-item" type="button" role="menuitem" data-language="de"><b>DE</b><span data-i18n="languageGerman">Deutsch</span></button>
-            </div>
-          </div>
-          <div class="help-menu-wrap">
-            <button id="help-menu-toggle" class="icon-button" type="button" data-i18n-aria-label="moreMenuLabel" data-i18n-title="moreMenuLabel" aria-expanded="false">⋯</button>
-            <div id="help-menu" class="secondary-menu help-menu hidden" role="menu">
-              <button id="back-to-main" class="menu-item" type="button" role="menuitem" data-i18n="backToMain">返回主界面</button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <section class="help-section">
-        <div class="section-kicker" data-i18n="helpKeyboardKicker">键盘位置</div>
-        <h2 data-i18n="helpKeyboardTitle">德语字母在哪里？</h2>
-        <p data-i18n="helpKeyboardDescription">绿色键帽标出了德语键盘中常用的特殊字母位置。</p>
-        <figure class="keyboard-figure">
-          <img src="/images/german-keyboard-layout.png" alt="完整德语 QWERTZ 键盘，绿色键帽标出 ä、ö、ü 和 ß 的位置" />
-          <figcaption data-i18n="helpKeyboardCaption">German QWERTZ 键盘布局</figcaption>
-        </figure>
-      </section>
-
-      <section class="help-section mapping-explanation">
-        <div class="section-kicker" data-i18n="helpMappingKicker">映射说明</div>
-        <h2 data-i18n="helpMappingTitle">美式键位如何输出德语字符</h2>
-        <div class="help-mapping-list">
-          <div class="help-mapping-row"><span class="keycap">[</span><span class="arrow" aria-hidden="true">→</span><strong>ü</strong><span><span data-i18n="helpShiftUpper">按住 Shift 输出</span> Ü</span></div>
-          <div class="help-mapping-row"><span class="keycap">'</span><span class="arrow" aria-hidden="true">→</span><strong>ä</strong><span><span data-i18n="helpShiftUpper">按住 Shift 输出</span> Ä</span></div>
-          <div class="help-mapping-row"><span class="keycap">;</span><span class="arrow" aria-hidden="true">→</span><strong>ö</strong><span><span data-i18n="helpShiftUpper">按住 Shift 输出</span> Ö</span></div>
-          <div class="help-mapping-row"><span class="keycap">-</span><span class="arrow" aria-hidden="true">→</span><strong>ß</strong><span><span data-i18n="helpShiftUpper">按住 Shift 输出</span> ẞ</span></div>
-        </div>
-        <p class="help-note" data-i18n="helpNote">映射只在辅助功能开启且按键没有被 Ctrl、Alt、Command、Option 或 Windows 等修饰键占用时生效。</p>
-      </section>
-    </main>
+    <div id="app"></div>
     <script type="module" src="/src/help.ts"></script>
   </body>
 </html>

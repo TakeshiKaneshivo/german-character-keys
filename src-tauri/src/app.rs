@@ -105,6 +105,7 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     let _ = register_shortcut(app.handle(), &state.config.lock().unwrap().toggle_shortcut);
     if let Some(window) = app.get_webview_window("main") {
+        apply_window_material(&window);
         let hidden_window = window.clone();
         window.on_window_event(move |event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
@@ -114,6 +115,27 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         });
     }
     Ok(())
+}
+
+fn apply_window_material<R: Runtime>(window: &tauri::WebviewWindow<R>) {
+    #[cfg(target_os = "windows")]
+    {
+        let _ = window_vibrancy::apply_blur(window, Some((18, 24, 21, 180)));
+    }
+    #[cfg(target_os = "macos")]
+    {
+        use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
+        let _ = apply_vibrancy(
+            window,
+            NSVisualEffectMaterial::HudWindow,
+            NSVisualEffectState::Active,
+            Some(12.0),
+        );
+    }
+    #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+    {
+        let _ = window;
+    }
 }
 
 fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
@@ -414,8 +436,11 @@ async fn open_help_window(app: AppHandle) -> Result<(), String> {
         .title("德语键盘辅助输入 - 帮助")
         .inner_size(820.0, 620.0)
         .resizable(true)
+        .decorations(false)
+        .transparent(true)
         .build()
         .map_err(|error| error.to_string())?;
+    apply_window_material(&window);
     let _ = window.set_always_on_top(true);
     let _ = window.set_focus();
     let _ = window.set_always_on_top(false);

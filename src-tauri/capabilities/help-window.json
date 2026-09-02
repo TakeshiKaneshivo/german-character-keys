@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "help-window",
+  "description": "Permissions for the help window controls",
+  "windows": ["help"],
+  "permissions": [
+    "core:window:allow-close",
+    "core:window:allow-start-dragging"
+  ]
+}

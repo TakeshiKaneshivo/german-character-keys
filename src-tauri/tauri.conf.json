@@ -10,14 +10,16 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "label": "main",
         "title": "德语键盘辅助输入",
         "width": 560,
-        "height": 365,
+        "height": 377,
         "resizable": false,
-        "visible": false
+        "visible": false,
+        "transparent": true
       }
     ],
     "security": {
