@@ -4,7 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useLanguage } from "./composables/useLanguage";
 import { useTheme } from "./composables/useTheme";
 import LanguageMenu from "./components/LanguageMenu.vue";
-import { ArrowRight, Keyboard, X } from "lucide-vue-next";
+import { ArrowRight, X } from "lucide-vue-next";
 import Kbd from "./components/ui/Kbd.vue";
 
 const { translate } = useLanguage();
@@ -43,7 +43,7 @@ async function startWindowDrag(event: MouseEvent) {
 
 <template>
   <main class="help-page" @mousedown="startWindowDrag"><div class="help-shell">
-    <header class="help-header"><div class="brand-lockup"><div class="brand-mark"><Keyboard :size="18" aria-hidden="true" /></div><div><span class="eyebrow">{{ translate('brandEyebrow') }}</span><h1>{{ translate('helpTitle') }}</h1><p class="subtitle">{{ translate('helpSubtitle') }}</p></div></div><div class="help-header-actions"><LanguageMenu /><button class="icon-button close-button" type="button" :aria-label="translate('closeHelp')" :title="translate('closeHelp')" @click="closeHelp"><X :size="18" aria-hidden="true" /></button></div></header>
+    <header class="help-header"><div class="brand-lockup"><div class="brand-mark"><img class="brand-logo" src="/images/german-character-keys-icon-four-keys-transparent.png" alt="" aria-hidden="true" /></div><div><span class="eyebrow">{{ translate('brandEyebrow') }}</span><h1>{{ translate('helpTitle') }}</h1><p class="subtitle">{{ translate('helpSubtitle') }}</p></div></div><div class="help-header-actions"><LanguageMenu /><button class="icon-button close-button" type="button" :aria-label="translate('closeHelp')" :title="translate('closeHelp')" @click="closeHelp"><X :size="18" aria-hidden="true" /></button></div></header>
     <p v-if="windowError" class="window-action-error" role="alert">{{ windowError }}</p>
     <section class="help-section"><span class="section-kicker">{{ translate('helpKeyboardKicker') }}</span><h2>{{ translate('helpKeyboardTitle') }}</h2><p>{{ translate('helpKeyboardDescription') }}</p><figure class="keyboard-figure"><img src="/images/german-keyboard-layout.png" alt="German QWERTZ keyboard layout" /><figcaption>{{ translate('helpKeyboardCaption') }}</figcaption></figure></section>
     <section class="help-section mapping-explanation"><span class="section-kicker">{{ translate('helpMappingKicker') }}</span><h2>{{ translate('helpMappingTitle') }}</h2><div class="help-mapping-list"><div v-for="mapping in mappings" :key="mapping.input" class="help-mapping-row"><Kbd class="keycap">{{ mapping.input }}</Kbd><ArrowRight class="arrow" :size="14" aria-hidden="true" /><strong>{{ mapping.output }}</strong><span>{{ translate('helpShiftUpper') }} {{ mapping.upper }}</span></div></div><p class="help-note">{{ translate('helpNote') }}</p></section>

@@ -46,7 +46,7 @@ export const translations: Record<Language, TranslationTable> = {
     recording: "按下組合鍵…", requiresModifier: "請至少使用一個修飾鍵，例如 Ctrl、Alt、Shift 或 Command。", recorded: "快速鍵已記錄並儲存。", saveRecorded: "請按下至少包含一個修飾鍵的組合鍵。", noShortcut: "請先錄製一個快速鍵。", unknownKey: "無法識別按鍵：{key}",
   },
   en: {
-    brandEyebrow: "GERMAN CHARACTER KEYS", appTitle: "German Character Keys for US Keyboards (ÄÖÜß)", appSubtitle: "Type German characters on a US keyboard",
+    brandEyebrow: "GERMAN CHARACTER KEYS", appTitle: "German Character Keys (ÄÖÜß)", appSubtitle: "Type German characters on a US keyboard",
     languageMenuLabel: "Choose language", themeMenuLabel: "Choose theme", themeSystem: "System", themeLight: "Light", themeDark: "Night", closeHelp: "Close help window", moreMenuLabel: "Open more menu", helpMenuItem: "Help", toggleMappingLabel: "Enable or disable German character mapping", shortcutAriaLabel: "Global shortcut; click and press a key combination to record it",
     statusOn: "On", statusOff: "Off", statusEnabled: "Mapping on", statusDisabled: "Mapping off", statusEnabledFull: "The four mapped keys are outputting German characters.", statusDisabledFull: "Turn this on to output German characters from four ANSI keys.",
     shortcutKicker: "Quick toggle", globalShortcut: "Global shortcut", globalShortcutFull: "Global shortcut", shortcutDescription: "Shortcut toggles mapping", shortcutDescriptionFull: "Use a shortcut to turn mapping on or off.", save: "Save", reset: "Reset", shortcutHint: "Shortcut toggles mapping", shortcutHintFull: "The shortcut toggles German character mapping.",
@@ -58,7 +58,7 @@ export const translations: Record<Language, TranslationTable> = {
     recording: "Press a shortcut…", requiresModifier: "Use at least one modifier such as Ctrl, Alt, Shift, or Command.", recorded: "Shortcut recorded and saved.", saveRecorded: "Press a combination containing at least one modifier.", noShortcut: "Record a shortcut first.", unknownKey: "Unrecognized key: {key}",
   },
   de: {
-    brandEyebrow: "GERMAN CHARACTER KEYS", appTitle: "Deutsche Zeichentasten für US-Tastaturen (ÄÖÜß)", appSubtitle: "Deutsche Zeichen auf einer US-Tastatur eingeben",
+    brandEyebrow: "GERMAN CHARACTER KEYS", appTitle: "Deutsche Zeichentasten (ÄÖÜß)", appSubtitle: "Deutsche Zeichen auf einer US-Tastatur eingeben",
     languageMenuLabel: "Sprache auswählen", themeMenuLabel: "Design auswählen", themeSystem: "System", themeLight: "Hell", themeDark: "Nacht", closeHelp: "Hilfe schließen", moreMenuLabel: "Weitere Optionen öffnen", helpMenuItem: "Hilfe", toggleMappingLabel: "Deutsche Zeichen-Zuordnung ein- oder ausschalten", shortcutAriaLabel: "Globale Tastenkombination; klicken und Kombination drücken, um sie aufzuzeichnen",
     statusOn: "Ein", statusOff: "Aus", statusEnabled: "Mapping aktiv", statusDisabled: "Mapping aus", statusEnabledFull: "Die vier zugeordneten Tasten geben deutsche Zeichen aus.", statusDisabledFull: "Aktivieren, um deutsche Zeichen über vier ANSI-Tasten einzugeben.",
     shortcutKicker: "Schnellumschaltung", globalShortcut: "Globaler Shortcut", globalShortcutFull: "Globale Tastenkombination", shortcutDescription: "Zuordnung umschalten", shortcutDescriptionFull: "Mit der Tastenkombination die Zuordnung ein- oder ausschalten.", save: "Speichern", reset: "Zurücksetzen", shortcutHint: "Shortcut schaltet Mapping um", shortcutHintFull: "Die Tastenkombination schaltet die Zeichen-Zuordnung um.",
