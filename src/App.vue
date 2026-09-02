@@ -5,6 +5,7 @@ import { useAppStatus } from "./composables/useAppStatus";
 import { useLanguage } from "./composables/useLanguage";
 import { useShortcutRecorder } from "./composables/useShortcutRecorder";
 import LanguageMenu from "./components/LanguageMenu.vue";
+import ThemeMenu from "./components/ThemeMenu.vue";
 import MoreMenu from "./components/MoreMenu.vue";
 import ShortcutEditor from "./components/ShortcutEditor.vue";
 import MappingGrid from "./components/MappingGrid.vue";
@@ -12,9 +13,11 @@ import PermissionDialog from "./components/PermissionDialog.vue";
 import { Keyboard, Power, ShieldCheck } from "lucide-vue-next";
 import Badge from "./components/ui/Badge.vue";
 import Switch from "./components/ui/Switch.vue";
+import { useTheme } from "./composables/useTheme";
 
 const { status, error, operationMessage, busy, blocked, permissionFeedback, setEnabled, setLaunchAtLogin, setShortcut, resetShortcut, checkPermission } = useAppStatus();
 const { translate } = useLanguage();
+useTheme();
 const committedShortcut = () => status.value?.shortcut ?? "";
 const recorder = useShortcutRecorder(committedShortcut, async (shortcut) => { await setShortcut(shortcut); });
 const shortcutValue = computed(() => recorder.displayValue.value);
@@ -43,7 +46,7 @@ async function closeApp() { try { await quitApp(); } catch (reason) { error.valu
           <div class="brand-mark"><Keyboard :size="18" aria-hidden="true" /></div>
           <div class="brand-copy"><span class="eyebrow">GERMAN KEY ASSIST</span><h1>{{ translate('appTitle') }}</h1><p class="subtitle">{{ translate('appSubtitle') }}</p></div>
         </div>
-        <div class="header-actions"><LanguageMenu /><MoreMenu @open-help="openHelp" /></div>
+        <div class="header-actions"><ThemeMenu /><LanguageMenu /><MoreMenu @open-help="openHelp" /></div>
       </header>
       <section class="status-strip" :class="{ 'is-on': status?.enabled }">
         <div class="status-copy"><div class="status-orb"><ShieldCheck :size="15" aria-hidden="true" /></div><div><p class="status-title" role="status" aria-live="polite">{{ status?.enabled ? translate('statusOn') : translate('statusOff') }}</p><p class="status-detail" :title="statusDetail">{{ statusText }}</p></div></div>

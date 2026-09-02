@@ -15,7 +15,7 @@ const { options, language, abbreviation, translate, chooseLanguage, menuOpen } =
       </button>
     </DropdownMenuTrigger>
     <DropdownMenuPortal>
-      <DropdownMenuContent class="menu-popover language-menu" align="start" :side-offset="8">
+      <DropdownMenuContent class="menu-popover language-menu" align="end" :side-offset="8">
       <DropdownMenuItem v-for="option in options" :key="option.code" class="language-item" :class="{ selected: option.code === language }" :aria-current="option.code === language ? 'true' : undefined" @select="chooseLanguage(option.code as Language)">
         <b>{{ option.abbreviation }}</b><span>{{ translate(option.code === 'zh-CN' ? 'languageSimplified' : option.code === 'zh-TW' ? 'languageTraditional' : option.code === 'en' ? 'languageEnglish' : 'languageGerman') }}</span>
       </DropdownMenuItem>

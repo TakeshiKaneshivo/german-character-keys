@@ -2,11 +2,13 @@
 import { ref, watchEffect } from "vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useLanguage } from "./composables/useLanguage";
+import { useTheme } from "./composables/useTheme";
 import LanguageMenu from "./components/LanguageMenu.vue";
 import { ArrowRight, Keyboard, X } from "lucide-vue-next";
 import Kbd from "./components/ui/Kbd.vue";
 
 const { translate } = useLanguage();
+useTheme();
 const helpWindow = getCurrentWindow();
 const windowError = ref("");
 const mappings = [{ input: "[", output: "ü", upper: "Ü" }, { input: "'", output: "ä", upper: "Ä" }, { input: ";", output: "ö", upper: "Ö" }, { input: "-", output: "ß", upper: "ẞ" }];
