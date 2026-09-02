@@ -1,60 +1,120 @@
-# German Key Assist
+# German Character Keys for US Keyboards (ÄÖÜß)
 
-一个面向美式 ANSI 键盘的德语字符辅助输入工具。
+[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Deutsch](README.de.md)
 
-## 映射
+Type German characters directly on a US ANSI keyboard with a small desktop helper for Windows and macOS.
 
-开启后，程序将以下物理按键转换为德语字符：
+![German QWERTZ keyboard layout](public/images/german-keyboard-layout.png)
+
+## Features
+
+- Map four physical US keyboard keys to German characters.
+- Use `Shift` and `Caps Lock` to enter uppercase and lowercase characters.
+- Pass through keys combined with `Ctrl`, `Alt`, `Command`, `Option`, or `Windows` modifiers.
+- Toggle the mapping with a configurable global shortcut.
+- Optionally launch the app at login.
+- Choose Light, Night, or Follow System appearance.
+- Use the interface in Simplified Chinese, Traditional Chinese, English, or German.
+- Open a dedicated help window with a keyboard reference and mapping details.
+- Receive an accessibility permission prompt where the operating system requires it.
+
+## Key mapping
+
+When mapping is enabled, these physical keys produce German characters:
 
 ```text
-[       -> ü / Ü
-'       -> ä / Ä
-;       -> ö / Ö
--       -> ß / ẞ
+[  -> ü / Ü
+'  -> ä / Ä
+;  -> ö / Ö
+-  -> ß / ẞ
 ```
 
-大写由 `Caps Lock XOR Shift` 决定。按住 Ctrl、Alt、Command、Option 或 Windows 键时，原始按键会被放行。程序不检测任何输入法内部状态，因此开启后中文输入法中的目标按键也会被转换。
+Hold `Shift` to enter an uppercase character. Caps Lock changes the default case, and holding `Shift` together with Caps Lock reverses it.
 
-## 开发
+Keys used with `Ctrl`, `Alt`, `Command`, `Option`, or `Windows` are left unchanged. The app works with physical key events and does not inspect the state of an input method, so the mapping also applies while another input method is active.
 
-```text
+## Usage
+
+1. Install and launch the app.
+2. Enable German character mapping from the main window.
+3. Press one of the mapped US keyboard keys in any supported text field.
+4. Open the shortcut editor to record or reset the global toggle shortcut.
+5. Use the language button to change the interface language.
+6. Use the appearance button to choose Light, Night, or Follow System.
+7. Open Help for the keyboard diagram and a complete mapping explanation.
+
+On macOS, grant the app permission in **System Settings > Privacy & Security > Accessibility** before enabling mapping. Windows does not require an additional accessibility permission for the keyboard hook.
+
+## Platform support
+
+| Platform | Support | Notes |
+| --- | --- | --- |
+| Windows x64 | Full mapping support | Uses a low-level keyboard hook; no additional app permission is required. |
+| macOS Apple Silicon | Full mapping support | Requires Accessibility permission. Release builds target `aarch64-apple-darwin`. |
+
+## Development
+
+Requirements: Node.js, npm, Rust, and the platform prerequisites documented by Tauri 2.
+
+```bash
 npm install
 npm run tauri dev
 ```
 
-Windows 正式 Release 构建可以直接双击项目根目录的 `build-windows-release.cmd`。也可以运行：
+The frontend can be built independently:
 
-```text
+```bash
+npm run build
+```
+
+Run Rust tests and formatting checks with:
+
+```bash
+cargo test --manifest-path src-tauri/Cargo.toml
+npm run format:check
+```
+
+The complete project check runs formatting, tests, Clippy, and the frontend build:
+
+```bash
+npm run check
+```
+
+## Release builds
+
+### Windows
+
+Build the x64 NSIS installer with:
+
+```bash
 npm run build:windows-release
 ```
 
-Windows Release 安装器位于 `src-tauri/target/release/bundle/nsis/German Key Assist_0.1.0_x64-setup.exe`，直接运行的 Release EXE 位于 `src-tauri/target/release/german-key-assist.exe`。两者都不会打开命令行窗口。脚本只支持 Windows x64，不会生成 MSI。不要使用 `--debug` 构建分发版本。
+You can also run `build-windows-release.cmd` from the repository root. The installer is written to `src-tauri/target/release/bundle/nsis/`. The release command produces NSIS only, not MSI.
 
-macOS Release 构建必须在 Apple Silicon Mac 上执行：
+### macOS
+
+Build the Apple Silicon DMG on an Apple Silicon Mac:
 
 ```bash
 chmod +x build-macos-release.sh
 ./build-macos-release.sh
 ```
 
-也可以运行：
+The equivalent npm command is `npm run build:macos-release`. The DMG is written to `src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/`.
 
-```text
-npm run build:macos-release
-```
+Unsigned or unnotarized macOS builds are intended for testing and internal distribution. Public distribution requires Apple Developer signing and notarization.
 
-macOS 安装器位于 `src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/German Key Assist_0.1.0_aarch64.dmg`，直接运行的应用位于 `src-tauri/target/aarch64-apple-darwin/release/german-key-assist`。脚本只生成 Apple Silicon `arm64` DMG，不在 Windows 上交叉编译 macOS。
+## Limitations
 
-macOS 未签名或未公证的构建仅用于测试和内部分发。正式发布时需要配置 Apple Developer、Developer ID 签名和公证。
+- Password fields, macOS Secure Input, remote desktop sessions, and some elevated windows may restrict keyboard event interception.
+- The app maps physical keys and does not detect or modify an input method's internal state.
+- On macOS, mapping cannot start until Accessibility permission has been granted.
 
-开发应用需要桌面权限来创建窗口和托盘。Windows 键盘钩子不需要额外的应用权限；macOS 首次开启映射前需要在系统设置的“隐私与安全性 > 辅助功能”中允许本应用。
+## Technology
 
-## 验证
+The desktop shell and native keyboard integration use Tauri 2 and Rust. The interface uses Vue 3, Vite, Tailwind CSS 4, Reka UI, Lucide icons, and motion-v. Windows and macOS keyboard backends are implemented in `src-tauri/src/keyboard/`.
 
-```text
-npm run build
-cargo test --manifest-path src-tauri/Cargo.toml
-npm run build:windows-release
-```
+## License
 
-macOS 只构建 Apple Silicon `arm64` 版本。密码框、Secure Input、远程桌面和部分高权限窗口的事件拦截能力取决于操作系统限制。
+This repository does not currently declare a license. All rights remain with the copyright holder until a license file is added.
