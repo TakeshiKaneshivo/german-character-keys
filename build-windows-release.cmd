@@ -2,7 +2,7 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
-echo Building German Key Assist for Windows x64...
+echo Building German Character Keys for US Keyboards (ÄÖÜß) for Windows x64...
 
 where node >nul 2>&1
 if errorlevel 1 (
@@ -44,14 +44,14 @@ if not exist "src-tauri\target\release\german-key-assist.exe" (
   echo Error: Release application was not generated.
   exit /b 1
 )
-if not exist "src-tauri\target\release\bundle\nsis\German Key Assist_0.1.0_x64-setup.exe" (
+if not exist "src-tauri\target\release\bundle\nsis\German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_x64-setup.exe" (
   echo Error: NSIS installer was not generated.
   exit /b 1
 )
 
 echo.
 echo Windows x64 Release build completed.
-echo Installer: src-tauri\target\release\bundle\nsis\German Key Assist_0.1.0_x64-setup.exe
+echo Installer: src-tauri\target\release\bundle\nsis\German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_x64-setup.exe
 echo App EXE:   src-tauri\target\release\german-key-assist.exe
 pause
 exit /b 0

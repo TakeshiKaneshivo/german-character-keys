@@ -433,7 +433,7 @@ async fn open_help_window(app: AppHandle) -> Result<(), String> {
     }
 
     let window = WebviewWindowBuilder::new(&app, "help", WebviewUrl::App("help.html".into()))
-        .title("德语键盘辅助输入 - 帮助")
+        .title("German Character Keys for US Keyboards (ÄÖÜß) - Help")
         .inner_size(820.0, 620.0)
         .resizable(true)
         .decorations(false)

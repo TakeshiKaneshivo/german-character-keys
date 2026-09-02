@@ -3,6 +3,9 @@ dist/
 src-tauri/target/
 src-tauri/gen/
 *.tmp
+coverage/
+*.pdb
+*.tsbuildinfo
 .DS_Store
 Thumbs.db
 *.log

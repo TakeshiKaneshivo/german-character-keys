@@ -44,7 +44,7 @@ async function closeApp() { try { await quitApp(); } catch (reason) { error.valu
       <header class="app-header">
         <div class="brand-lockup">
           <div class="brand-mark"><Keyboard :size="18" aria-hidden="true" /></div>
-          <div class="brand-copy"><span class="eyebrow">GERMAN KEY ASSIST</span><h1>{{ translate('appTitle') }}</h1><p class="subtitle">{{ translate('appSubtitle') }}</p></div>
+          <div class="brand-copy"><span class="eyebrow">{{ translate('brandEyebrow') }}</span><h1>{{ translate('appTitle') }}</h1><p class="subtitle">{{ translate('appSubtitle') }}</p></div>
         </div>
         <div class="header-actions"><ThemeMenu /><LanguageMenu /><MoreMenu @open-help="openHelp" /></div>
       </header>

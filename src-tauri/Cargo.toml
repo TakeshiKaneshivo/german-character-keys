@@ -2,7 +2,7 @@
 name = "german-key-assist"
 version = "0.1.0"
 description = "German keyboard assistance for US ANSI keyboards"
-authors = ["German Key Assist"]
+authors = ["German Character Keys for US Keyboards"]
 edition = "2021"
 
 [lib]
