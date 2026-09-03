@@ -1,6 +1,6 @@
 # German Character Keys for US Keyboards (ÄÖÜß)
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Deutsch](README.de.md)
+[English](README.md) · [Deutsch](README.de.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md)
 
 Type German characters directly on a US ANSI keyboard with a small desktop helper for Windows and macOS.
 

@@ -1,6 +1,6 @@
 # 美式键盘德语字符键（ÄÖÜß）
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Deutsch](README.de.md)
+[English](README.md) · [Deutsch](README.de.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md)
 
 一个轻量桌面工具，让你直接在美式 ANSI 键盘上输入德语字符，支持 Windows 和 macOS。
 

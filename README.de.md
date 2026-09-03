@@ -1,6 +1,6 @@
 # Deutsche Zeichentasten für US-Tastaturen (ÄÖÜß)
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Deutsch](README.de.md)
+[English](README.md) · [Deutsch](README.de.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md)
 
 Ein schlankes Desktop-Programm, mit dem du deutsche Zeichen direkt auf einer US-ANSI-Tastatur eingeben kannst. Unterstützt werden Windows und macOS.
 
