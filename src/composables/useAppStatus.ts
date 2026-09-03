@@ -1,5 +1,5 @@
-import { computed, onMounted, ref } from "vue";
-import { getStatus, refreshPermission, resetShortcut, setEnabled, setLaunchAtLogin, setShortcut } from "../tauri";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { getStatus, listenMappingState, refreshPermission, resetShortcut, setEnabled, setLaunchAtLogin, setShortcut } from "../tauri";
 import type { OperationResult, Status } from "../types";
 
 export function useAppStatus() {
@@ -8,6 +8,7 @@ export function useAppStatus() {
   const operationMessage = ref("");
   const busy = ref(false);
   const permissionFeedback = ref("");
+  let stopMappingStateListener: (() => void) | undefined;
 
   const blocked = computed(() => status.value?.platform === "macos" && !status.value.accessibility_granted);
 
@@ -34,7 +35,27 @@ export function useAppStatus() {
     }
   }
 
-  onMounted(() => refresh().catch((reason) => { error.value = String(reason); }));
+  onMounted(async () => {
+    let mounted = true;
+    let unlisten: (() => void) | undefined;
+    stopMappingStateListener = () => {
+      mounted = false;
+      unlisten?.();
+    };
+    try {
+      const stop = await listenMappingState((nextStatus) => {
+        status.value = nextStatus;
+        error.value = nextStatus.message ?? "";
+        operationMessage.value = "";
+      });
+      if (mounted) unlisten = stop;
+      else stop();
+      if (mounted) await refresh();
+    } catch (reason) {
+      error.value = String(reason);
+    }
+  });
+  onBeforeUnmount(() => stopMappingStateListener?.());
   return {
     status, error, operationMessage, busy, blocked, permissionFeedback, refresh,
     setEnabled: (value: boolean) => apply(() => setEnabled(value)),

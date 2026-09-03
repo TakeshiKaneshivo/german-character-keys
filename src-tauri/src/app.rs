@@ -7,7 +7,7 @@ use tauri::{
     menu::{CheckMenuItem, Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     webview::WebviewWindowBuilder,
-    AppHandle, Manager, Runtime, State, WebviewUrl,
+    AppHandle, Emitter, Manager, Runtime, State, WebviewUrl,
 };
 use tauri_plugin_autostart::ManagerExt as AutoStartManagerExt;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
@@ -19,6 +19,7 @@ pub fn run() {
                 .with_handler(|app, _, event| {
                     if event.state() == tauri_plugin_global_shortcut::ShortcutState::Pressed {
                         let _ = toggle_enabled(app);
+                        let _ = emit_mapping_state(app);
                         let _ = sync_tray(app);
                     }
                 })
@@ -93,6 +94,7 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .on_menu_event(|app, event| match event.id.as_ref() {
             "toggle" => {
                 let _ = toggle_enabled(app);
+                let _ = emit_mapping_state(app);
                 let _ = sync_tray(app);
             }
             "settings" => {
@@ -156,9 +158,9 @@ fn build_tray_menu<R: Runtime, M: Manager<R>>(
     let enable = CheckMenuItem::with_id(
         app,
         "toggle",
-        "启用辅助映射",
-        runtime.enabled,
+        "辅助映射",
         true,
+        runtime.enabled,
         None::<&str>,
     )?;
     let status = MenuItem::with_id(app, "status", tray_status(&runtime), false, None::<&str>)?;
@@ -182,6 +184,12 @@ fn sync_tray(app: &AppHandle) -> Result<(), String> {
     app.tray_by_id("main")
         .ok_or_else(|| "托盘图标不存在".to_string())?
         .set_menu(Some(menu))
+        .map_err(|e| e.to_string())
+}
+
+fn emit_mapping_state(app: &AppHandle) -> Result<(), String> {
+    let state = app.state::<Arc<SharedState>>();
+    app.emit("mapping-state-changed", state.runtime())
         .map_err(|e| e.to_string())
 }
 

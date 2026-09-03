@@ -36,6 +36,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/icon.ico",
+        "headerImage": "nsis/installer-header.bmp",
+        "sidebarImage": "nsis/installer-sidebar.bmp"
+      }
+    },
     "createUpdaterArtifacts": false
   }
 }

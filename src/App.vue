@@ -43,7 +43,7 @@ async function closeApp() { try { await quitApp(); } catch (reason) { error.valu
     <div class="app-window" :inert="blocked" :aria-hidden="blocked ? 'true' : undefined">
       <header class="app-header">
         <div class="brand-lockup">
-          <div class="brand-mark"><img class="brand-logo" src="/images/german-character-keys-icon-four-keys-transparent.png" alt="" aria-hidden="true" /></div>
+          <div class="brand-mark"><img class="brand-logo" src="/images/german-character-keys-icon.png" alt="" aria-hidden="true" /></div>
           <div class="brand-copy"><span class="eyebrow">{{ translate('brandEyebrow') }}</span><h1>{{ translate('appTitle') }}</h1><p class="subtitle">{{ translate('appSubtitle') }}</p></div>
         </div>
         <div class="header-actions"><ThemeMenu /><LanguageMenu /><MoreMenu @open-help="openHelp" /></div>
