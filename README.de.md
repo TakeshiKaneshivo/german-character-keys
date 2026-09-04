@@ -16,7 +16,6 @@ Ein schlankes Desktop-Programm, mit dem du deutsche Zeichen direkt auf einer US-
 - Wähle zwischen Hell, Nacht und Systemdarstellung.
 - Die Oberfläche ist auf vereinfachtem Chinesisch, traditionellem Chinesisch, Englisch und Deutsch verfügbar.
 - Ein eigenes Hilfefenster zeigt das Tastaturlayout und die vollständige Zuordnung.
-- Wenn das Betriebssystem es verlangt, wird ein Hinweis für Bedienungshilfen angezeigt.
 
 ## Tastenbelegung
 
@@ -50,71 +49,8 @@ Auf macOS muss die App zuerst unter **Systemeinstellungen > Datenschutz & Sicher
 | Plattform | Unterstützung | Hinweise |
 | --- | --- | --- |
 | Windows x64 | Vollständige Zuordnung | Verwendet einen Low-Level-Tastatur-Hook und benötigt keine zusätzliche App-Berechtigung. |
-| macOS Apple Silicon | Vollständige Zuordnung | Bedienungshilfen-Berechtigung erforderlich; Release-Ziel ist `aarch64-apple-darwin`. |
-
-## Entwicklung
-
-Benötigt werden Node.js, npm, Rust und die von Tauri 2 vorausgesetzten Plattformwerkzeuge.
-
-```bash
-npm install
-npm run tauri dev
-```
-
-Frontend unabhängig bauen:
-
-```bash
-npm run build
-```
-
-Rust-Tests und Formatprüfung ausführen:
-
-```bash
-cargo test --manifest-path src-tauri/Cargo.toml
-npm run format:check
-```
-
-Die vollständige Prüfung führt Formatprüfung, Tests, Clippy und den Frontend-Build aus:
-
-```bash
-npm run check
-```
-
-## Release-Builds
-
-### Windows
-
-Erstelle den NSIS-Installer für Windows x64:
-
-```bash
-npm run build:windows-release
-```
-
-Alternativ kann `build-windows-release.cmd` im Projektstamm ausgeführt werden. Der Installer wird nach `src-tauri/target/release/bundle/nsis/` geschrieben. Der Befehl erzeugt nur NSIS, keine MSI-Datei.
-
-### macOS
-
-Erstelle die DMG für Apple Silicon auf einem Apple-Silicon-Mac:
-
-```bash
-chmod +x build-macos-release.sh
-./build-macos-release.sh
-```
-
-Der entsprechende npm-Befehl lautet `npm run build:macos-release`. Die DMG wird nach `src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/` geschrieben.
-
-Nicht signierte oder nicht notarized macOS-Builds sind nur für Tests und interne Verteilung gedacht. Für eine öffentliche Veröffentlichung sind Apple-Developer-Signatur und Notarisierung erforderlich.
+| macOS Apple Silicon | Vollständige Zuordnung | Bedienungshilfen-Berechtigung erforderlich. |
 
 ## Einschränkungen
 
 - Passwortfelder, macOS Secure Input, Remote-Desktop-Sitzungen und manche Fenster mit erhöhten Rechten können das Abfangen von Tastaturereignissen einschränken.
-- Die App ordnet physische Tasten zu und erkennt oder verändert nicht den internen Zustand einer Eingabemethode.
-- Unter macOS kann die Zuordnung erst nach Erteilung der Bedienungshilfen-Berechtigung gestartet werden.
-
-## Technologie
-
-Desktop-Shell und native Tastaturintegration verwenden Tauri 2 und Rust. Die Oberfläche basiert auf Vue 3, Vite, Tailwind CSS 4, Reka UI, Lucide-Icons und motion-v. Die Tastatur-Backends für Windows und macOS liegen in `src-tauri/src/keyboard/`.
-
-## Lizenz
-
-Dieses Repository hat derzeit keine deklarierte Lizenz. Bis eine Lizenzdatei hinzugefügt wird, verbleiben alle Rechte beim Urheberrechtsinhaber.

@@ -16,7 +16,6 @@
 - 支持浅色、夜间和跟随系统主题。
 - 支持简体中文、繁體中文、English 和 Deutsch 界面。
 - 提供独立帮助窗口、键盘示意图和映射说明。
-- 在操作系统要求时显示辅助功能权限提示。
 
 ## 按键映射
 
@@ -50,71 +49,8 @@ macOS 用户需要先在 **系统设置 > 隐私与安全性 > 辅助功能** �
 | 平台 | 支持情况 | 说明 |
 | --- | --- | --- |
 | Windows x64 | 完整支持映射 | 使用低级键盘钩子，不需要额外应用权限。 |
-| macOS Apple Silicon | 完整支持映射 | 需要辅助功能权限，Release 目标为 `aarch64-apple-darwin`。 |
-
-## 开发
-
-需要 Node.js、npm、Rust，以及 Tauri 2 要求的平台开发环境。
-
-```bash
-npm install
-npm run tauri dev
-```
-
-单独构建前端：
-
-```bash
-npm run build
-```
-
-运行 Rust 测试和格式检查：
-
-```bash
-cargo test --manifest-path src-tauri/Cargo.toml
-npm run format:check
-```
-
-完整检查会执行格式检查、测试、Clippy 和前端构建：
-
-```bash
-npm run check
-```
-
-## Release 构建
-
-### Windows
-
-构建 Windows x64 NSIS 安装包：
-
-```bash
-npm run build:windows-release
-```
-
-也可以在项目根目录运行 `build-windows-release.cmd`。安装包输出到 `src-tauri/target/release/bundle/nsis/`，该命令只生成 NSIS，不生成 MSI。
-
-### macOS
-
-请在 Apple Silicon Mac 上构建 Apple Silicon DMG：
-
-```bash
-chmod +x build-macos-release.sh
-./build-macos-release.sh
-```
-
-等效 npm 命令是 `npm run build:macos-release`。DMG 输出到 `src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/`。
-
-未签名或未公证的 macOS 构建仅用于测试和内部分发。公开发布需要 Apple Developer 签名和公证。
+| macOS Apple Silicon | 完整支持映射 | 需要辅助功能权限。 |
 
 ## 限制
 
 - 密码框、macOS Secure Input、远程桌面会话和部分高权限窗口可能限制键盘事件拦截。
-- 程序映射物理按键，不检测或修改输入法内部状态。
-- macOS 必须先获得辅助功能权限才能启动映射。
-
-## 技术栈
-
-桌面外壳和原生键盘集成使用 Tauri 2 与 Rust。界面使用 Vue 3、Vite、Tailwind CSS 4、Reka UI、Lucide 图标和 motion-v。Windows 与 macOS 键盘后端位于 `src-tauri/src/keyboard/`。
-
-## License
-
-当前仓库尚未声明许可证。在添加许可证文件前，所有权利归版权持有人所有。

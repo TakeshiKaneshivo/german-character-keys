@@ -16,7 +16,6 @@ Type German characters directly on a US ANSI keyboard with a small desktop helpe
 - Choose Light, Night, or Follow System appearance.
 - Use the interface in Simplified Chinese, Traditional Chinese, English, or German.
 - Open a dedicated help window with a keyboard reference and mapping details.
-- Receive an accessibility permission prompt where the operating system requires it.
 
 ## Key mapping
 
@@ -50,71 +49,8 @@ On macOS, grant the app permission in **System Settings > Privacy & Security > A
 | Platform | Support | Notes |
 | --- | --- | --- |
 | Windows x64 | Full mapping support | Uses a low-level keyboard hook; no additional app permission is required. |
-| macOS Apple Silicon | Full mapping support | Requires Accessibility permission. Release builds target `aarch64-apple-darwin`. |
-
-## Development
-
-Requirements: Node.js, npm, Rust, and the platform prerequisites documented by Tauri 2.
-
-```bash
-npm install
-npm run tauri dev
-```
-
-The frontend can be built independently:
-
-```bash
-npm run build
-```
-
-Run Rust tests and formatting checks with:
-
-```bash
-cargo test --manifest-path src-tauri/Cargo.toml
-npm run format:check
-```
-
-The complete project check runs formatting, tests, Clippy, and the frontend build:
-
-```bash
-npm run check
-```
-
-## Release builds
-
-### Windows
-
-Build the x64 NSIS installer with:
-
-```bash
-npm run build:windows-release
-```
-
-You can also run `build-windows-release.cmd` from the repository root. The installer is written to `src-tauri/target/release/bundle/nsis/`. The release command produces NSIS only, not MSI.
-
-### macOS
-
-Build the Apple Silicon DMG on an Apple Silicon Mac:
-
-```bash
-chmod +x build-macos-release.sh
-./build-macos-release.sh
-```
-
-The equivalent npm command is `npm run build:macos-release`. The DMG is written to `src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/`.
-
-Unsigned or unnotarized macOS builds are intended for testing and internal distribution. Public distribution requires Apple Developer signing and notarization.
+| macOS Apple Silicon | Full mapping support | Requires Accessibility permission. |
 
 ## Limitations
 
 - Password fields, macOS Secure Input, remote desktop sessions, and some elevated windows may restrict keyboard event interception.
-- The app maps physical keys and does not detect or modify an input method's internal state.
-- On macOS, mapping cannot start until Accessibility permission has been granted.
-
-## Technology
-
-The desktop shell and native keyboard integration use Tauri 2 and Rust. The interface uses Vue 3, Vite, Tailwind CSS 4, Reka UI, Lucide icons, and motion-v. Windows and macOS keyboard backends are implemented in `src-tauri/src/keyboard/`.
-
-## License
-
-This repository does not currently declare a license. All rights remain with the copyright holder until a license file is added.
