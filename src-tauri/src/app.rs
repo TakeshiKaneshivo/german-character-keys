@@ -7,7 +7,7 @@ use tauri::{
     menu::{CheckMenuItem, Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     webview::WebviewWindowBuilder,
-    AppHandle, Emitter, Manager, Runtime, State, WebviewUrl,
+    AppHandle, Emitter, LogicalSize, Manager, Runtime, Size, State, WebviewUrl,
 };
 use tauri_plugin_autostart::ManagerExt as AutoStartManagerExt;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
@@ -108,11 +108,14 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let _ = register_shortcut(app.handle(), &state.config.lock().unwrap().toggle_shortcut);
     if let Some(window) = app.get_webview_window("main") {
         apply_window_material(&window);
+        disable_window_shadow(&window);
         let hidden_window = window.clone();
         window.on_window_event(move |event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
                 let _ = hidden_window.hide();
+            } else if let tauri::WindowEvent::Focused(true) = event {
+                disable_window_shadow(&hidden_window);
             }
         });
     }
@@ -126,13 +129,7 @@ fn apply_window_material<R: Runtime>(window: &tauri::WebviewWindow<R>) {
     }
     #[cfg(target_os = "macos")]
     {
-        use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
-        let _ = apply_vibrancy(
-            window,
-            NSVisualEffectMaterial::HudWindow,
-            Some(NSVisualEffectState::Active),
-            Some(12.0),
-        );
+        let _ = window_vibrancy::clear_vibrancy(window);
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos")))]
     {
@@ -140,10 +137,36 @@ fn apply_window_material<R: Runtime>(window: &tauri::WebviewWindow<R>) {
     }
 }
 
+fn apply_main_window_size<R: Runtime>(window: &tauri::WebviewWindow<R>) {
+    #[cfg(target_os = "macos")]
+    {
+        let size = Size::Logical(LogicalSize::new(560.0, 404.0));
+        let _ = window.set_size(size.clone());
+        let _ = window.set_min_size(Some(size));
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        let _ = window;
+    }
+}
+
+fn disable_window_shadow<R: Runtime>(window: &tauri::WebviewWindow<R>) {
+    #[cfg(target_os = "macos")]
+    {
+        let _ = window.set_shadow(false);
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        let _ = window;
+    }
+}
+
 fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
     if let Some(window) = app.get_webview_window("main") {
+        apply_main_window_size(&window);
         let _ = window.unminimize();
         let _ = window.show();
+        disable_window_shadow(&window);
         let _ = window.set_always_on_top(true);
         let _ = window.set_focus();
         let _ = window.set_always_on_top(false);
@@ -440,15 +463,28 @@ async fn open_help_window(app: AppHandle) -> Result<(), String> {
         return Ok(());
     }
 
-    let window = WebviewWindowBuilder::new(&app, "help", WebviewUrl::App("help.html".into()))
+    let mut builder = WebviewWindowBuilder::new(&app, "help", WebviewUrl::App("help.html".into()))
         .title("German Character Keys for US Keyboards (ÄÖÜß) - Help")
         .inner_size(820.0, 620.0)
         .resizable(true)
-        .decorations(false)
-        .transparent(true)
-        .build()
-        .map_err(|error| error.to_string())?;
+        .decorations(false);
+    #[cfg(target_os = "macos")]
+    {
+        builder = builder.transparent(false);
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        builder = builder.transparent(true);
+    }
+    let window = builder.build().map_err(|error| error.to_string())?;
     apply_window_material(&window);
+    disable_window_shadow(&window);
+    let hidden_window = window.clone();
+    window.on_window_event(move |event| {
+        if let tauri::WindowEvent::Focused(true) = event {
+            disable_window_shadow(&hidden_window);
+        }
+    });
     let _ = window.set_always_on_top(true);
     let _ = window.set_focus();
     let _ = window.set_always_on_top(false);

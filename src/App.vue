@@ -27,6 +27,7 @@ const shortcutMessageError = computed(() => recorder.messageError.value || feedb
 const statusText = computed(() => error.value || operationMessage.value || (status.value?.enabled ? translate("statusEnabled") : translate("statusDisabled")));
 const statusDetail = computed(() => status.value?.enabled ? translate("statusEnabledFull") : translate("statusDisabledFull"));
 const feedbackError = computed(() => Boolean(error.value));
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.platform);
 
 watchEffect(() => { document.title = translate("appTitle"); });
 
@@ -39,7 +40,7 @@ async function closeApp() { try { await quitApp(); } catch (reason) { error.valu
 </script>
 
 <template>
-  <main class="app-shell">
+  <main class="app-shell" :class="{ 'platform-macos': isMac }">
     <div class="app-window" :inert="blocked" :aria-hidden="blocked ? 'true' : undefined">
       <header class="app-header">
         <div class="brand-lockup">

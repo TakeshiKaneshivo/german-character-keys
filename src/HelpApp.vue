@@ -10,6 +10,7 @@ import Kbd from "./components/ui/Kbd.vue";
 const { translate } = useLanguage();
 useTheme();
 const helpWindow = getCurrentWindow();
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.platform);
 const windowError = ref("");
 const mappings = [{ input: "[", output: "ü", upper: "Ü" }, { input: "'", output: "ä", upper: "Ä" }, { input: ";", output: "ö", upper: "Ö" }, { input: "-", output: "ß", upper: "ẞ" }];
 watchEffect(() => { document.title = `${translate("appTitle")} - ${translate("helpTitle")}`; });
@@ -42,7 +43,7 @@ async function startWindowDrag(event: MouseEvent) {
 </script>
 
 <template>
-  <main class="help-page" @mousedown="startWindowDrag"><div class="help-shell">
+  <main class="help-page" :class="{ 'platform-macos': isMac }" @mousedown="startWindowDrag"><div class="help-shell">
     <header class="help-header"><div class="brand-lockup"><div class="brand-mark"><img class="brand-logo" src="/images/german-character-keys-icon.png" alt="" aria-hidden="true" /></div><div><span class="eyebrow">{{ translate('brandEyebrow') }}</span><h1>{{ translate('helpTitle') }}</h1><p class="subtitle">{{ translate('helpSubtitle') }}</p></div></div><div class="help-header-actions"><LanguageMenu /><button class="icon-button close-button" type="button" :aria-label="translate('closeHelp')" :title="translate('closeHelp')" @click="closeHelp"><X :size="18" aria-hidden="true" /></button></div></header>
     <p v-if="windowError" class="window-action-error" role="alert">{{ windowError }}</p>
     <section class="help-section"><span class="section-kicker">{{ translate('helpKeyboardKicker') }}</span><h2>{{ translate('helpKeyboardTitle') }}</h2><p>{{ translate('helpKeyboardDescription') }}</p><figure class="keyboard-figure"><img src="/images/german-keyboard-layout.png" alt="German QWERTZ keyboard layout" /><figcaption>{{ translate('helpKeyboardCaption') }}</figcaption></figure></section>
