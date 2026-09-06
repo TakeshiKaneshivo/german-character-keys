@@ -130,7 +130,7 @@ fn apply_window_material<R: Runtime>(window: &tauri::WebviewWindow<R>) {
         let _ = apply_vibrancy(
             window,
             NSVisualEffectMaterial::HudWindow,
-            NSVisualEffectState::Active,
+            Some(NSVisualEffectState::Active),
             Some(12.0),
         );
     }
