@@ -108,14 +108,11 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let _ = register_shortcut(app.handle(), &state.config.lock().unwrap().toggle_shortcut);
     if let Some(window) = app.get_webview_window("main") {
         apply_window_material(&window);
-        disable_window_shadow(&window);
         let hidden_window = window.clone();
         window.on_window_event(move |event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
                 let _ = hidden_window.hide();
-            } else if let tauri::WindowEvent::Focused(true) = event {
-                disable_window_shadow(&hidden_window);
             }
         });
     }
@@ -127,11 +124,7 @@ fn apply_window_material<R: Runtime>(window: &tauri::WebviewWindow<R>) {
     {
         let _ = window_vibrancy::apply_blur(window, Some((18, 24, 21, 180)));
     }
-    #[cfg(target_os = "macos")]
-    {
-        let _ = window_vibrancy::clear_vibrancy(window);
-    }
-    #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+    #[cfg(not(target_os = "windows"))]
     {
         let _ = window;
     }
@@ -150,26 +143,12 @@ fn apply_main_window_size<R: Runtime>(window: &tauri::WebviewWindow<R>) {
     }
 }
 
-fn disable_window_shadow<R: Runtime>(window: &tauri::WebviewWindow<R>) {
-    #[cfg(target_os = "macos")]
-    {
-        let _ = window.set_shadow(false);
-    }
-    #[cfg(not(target_os = "macos"))]
-    {
-        let _ = window;
-    }
-}
-
 fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
     if let Some(window) = app.get_webview_window("main") {
         apply_main_window_size(&window);
         let _ = window.unminimize();
         let _ = window.show();
-        disable_window_shadow(&window);
-        let _ = window.set_always_on_top(true);
         let _ = window.set_focus();
-        let _ = window.set_always_on_top(false);
     }
 }
 
@@ -457,9 +436,7 @@ async fn open_help_window(app: AppHandle) -> Result<(), String> {
     if let Some(window) = app.get_webview_window("help") {
         let _ = window.unminimize();
         let _ = window.show();
-        let _ = window.set_always_on_top(true);
         let _ = window.set_focus();
-        let _ = window.set_always_on_top(false);
         return Ok(());
     }
 
@@ -478,16 +455,7 @@ async fn open_help_window(app: AppHandle) -> Result<(), String> {
     }
     let window = builder.build().map_err(|error| error.to_string())?;
     apply_window_material(&window);
-    disable_window_shadow(&window);
-    let hidden_window = window.clone();
-    window.on_window_event(move |event| {
-        if let tauri::WindowEvent::Focused(true) = event {
-            disable_window_shadow(&hidden_window);
-        }
-    });
-    let _ = window.set_always_on_top(true);
     let _ = window.set_focus();
-    let _ = window.set_always_on_top(false);
     Ok(())
 }
 
