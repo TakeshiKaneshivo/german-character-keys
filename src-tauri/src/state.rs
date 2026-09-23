@@ -27,9 +27,9 @@ impl Default for AppConfig {
 
 pub fn default_shortcut() -> String {
     if cfg!(target_os = "macos") {
-        "Command+D".into()
+        "Command+K".into()
     } else {
-        "Ctrl+D".into()
+        "Ctrl+K".into()
     }
 }
 
@@ -180,9 +180,9 @@ mod tests {
         assert_eq!(
             config.toggle_shortcut,
             if cfg!(target_os = "macos") {
-                "Command+D"
+                "Command+K"
             } else {
-                "Ctrl+D"
+                "Ctrl+K"
             }
         );
     }

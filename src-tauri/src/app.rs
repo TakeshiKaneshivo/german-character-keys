@@ -2,7 +2,10 @@ use crate::{
     keyboard::{create_backend, BackendStatus, KeyboardBackend, OperationResult},
     state::{default_shortcut, RuntimeState, SharedState},
 };
-use std::sync::{atomic::Ordering, Arc};
+use std::{
+    env,
+    sync::{atomic::Ordering, Arc},
+};
 use tauri::{
     image::Image,
     menu::{CheckMenuItem, Menu, MenuItem},
@@ -12,6 +15,8 @@ use tauri::{
 };
 use tauri_plugin_autostart::ManagerExt as AutoStartManagerExt;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
+
+const AUTOSTART_ARG: &str = "--from-autostart";
 
 pub fn run() {
     tauri::Builder::default()
@@ -29,7 +34,11 @@ pub fn run() {
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             show_main_window(app);
         }))
-        .plugin(tauri_plugin_autostart::Builder::new().build())
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .arg(AUTOSTART_ARG)
+                .build(),
+        )
         .setup(setup)
         .invoke_handler(tauri::generate_handler![
             get_status,
@@ -48,6 +57,7 @@ pub fn run() {
 }
 
 fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    let launched_from_autostart = env::args().any(|arg| arg == AUTOSTART_ARG);
     let config_dir = app
         .path()
         .app_config_dir()
@@ -121,6 +131,9 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                 let _ = hidden_window.hide();
             }
         });
+    }
+    if !launched_from_autostart {
+        show_main_window(app.handle());
     }
     Ok(())
 }
@@ -522,7 +535,7 @@ mod tests {
             enabled: true,
             shortcut_registered: false,
             accessibility_granted: true,
-            shortcut: "Ctrl+D".into(),
+            shortcut: "Ctrl+K".into(),
             platform: "test".into(),
             launch_at_login: false,
             backend_status: BackendStatus::Running,
