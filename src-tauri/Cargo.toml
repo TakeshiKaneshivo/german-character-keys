@@ -1,12 +1,12 @@
 [package]
-name = "german-key-assist"
+name = "german-character-keys"
 version = "0.1.0"
 description = "German keyboard assistance for US ANSI keyboards"
 authors = ["German Character Keys for US Keyboards"]
 edition = "2021"
 
 [lib]
-name = "german_key_assist_lib"
+name = "german_character_keys_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

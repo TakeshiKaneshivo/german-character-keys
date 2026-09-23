@@ -1296,7 +1296,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "german-key-assist"
+name = "german-character-keys"
 version = "0.1.0"
 dependencies = [
  "core-foundation",

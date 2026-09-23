@@ -4,6 +4,7 @@ use crate::{
 };
 use std::sync::{atomic::Ordering, Arc};
 use tauri::{
+    image::Image,
     menu::{CheckMenuItem, Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     webview::WebviewWindowBuilder,
@@ -76,9 +77,10 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     app.manage(state.clone());
     app.manage(backend);
-    let menu = build_tray_menu(app, &state)?;
-    TrayIconBuilder::with_id("main")
-        .icon(tauri::include_image!("icons/icon.png"))
+    let runtime = state.runtime();
+    let menu = build_tray_menu(app, &runtime)?;
+    let mut tray_builder = TrayIconBuilder::with_id("main")
+        .icon(tray_icon(&runtime))
         .menu(&menu)
         .show_menu_on_left_click(false)
         .on_tray_icon_event(|tray, event| {
@@ -102,8 +104,12 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             }
             "quit" => app.exit(0),
             _ => {}
-        })
-        .build(app)?;
+        });
+    #[cfg(target_os = "macos")]
+    {
+        tray_builder = tray_builder.icon_as_template(true);
+    }
+    tray_builder.build(app)?;
 
     let _ = register_shortcut(app.handle(), &state.config.lock().unwrap().toggle_shortcut);
     if let Some(window) = app.get_webview_window("main") {
@@ -134,7 +140,7 @@ fn apply_main_window_size<R: Runtime>(window: &tauri::WebviewWindow<R>) {
     #[cfg(target_os = "macos")]
     {
         let size = Size::Logical(LogicalSize::new(560.0, 404.0));
-        let _ = window.set_size(size.clone());
+        let _ = window.set_size(size);
         let _ = window.set_min_size(Some(size));
     }
     #[cfg(not(target_os = "macos"))]
@@ -154,18 +160,17 @@ fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
 
 fn build_tray_menu<R: Runtime, M: Manager<R>>(
     app: &M,
-    state: &SharedState,
+    runtime: &RuntimeState,
 ) -> tauri::Result<Menu<R>> {
-    let runtime = state.runtime();
     let enable = CheckMenuItem::with_id(
         app,
         "toggle",
         "辅助映射",
         true,
-        runtime.enabled,
+        is_mapping_active(runtime),
         None::<&str>,
     )?;
-    let status = MenuItem::with_id(app, "status", tray_status(&runtime), false, None::<&str>)?;
+    let status = MenuItem::with_id(app, "status", tray_status(runtime), false, None::<&str>)?;
     let settings = MenuItem::with_id(app, "settings", "设置", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
     Menu::with_items(app, &[&status, &enable, &settings, &quit])
@@ -175,17 +180,48 @@ fn tray_status(runtime: &RuntimeState) -> String {
     match runtime.backend_status {
         BackendStatus::PermissionRequired => "当前状态：需要权限".into(),
         BackendStatus::InitializationFailed => "当前状态：初始化失败".into(),
-        BackendStatus::Running if runtime.enabled => "当前状态：开启".into(),
+        BackendStatus::Running if is_mapping_active(runtime) => "当前状态：开启".into(),
         _ => "当前状态：关闭".into(),
+    }
+}
+
+fn is_mapping_active(runtime: &RuntimeState) -> bool {
+    runtime.enabled && runtime.backend_status == BackendStatus::Running
+}
+
+fn tray_icon(runtime: &RuntimeState) -> Image<'static> {
+    #[cfg(target_os = "macos")]
+    {
+        if is_mapping_active(runtime) {
+            tauri::include_image!("icons/tray-macos-enabled@2x.png")
+        } else {
+            tauri::include_image!("icons/tray-macos-disabled@2x.png")
+        }
+    }
+    #[cfg(windows)]
+    {
+        if is_mapping_active(runtime) {
+            tauri::include_image!("icons/icon-enabled.png")
+        } else {
+            tauri::include_image!("icons/icon.png")
+        }
+    }
+    #[cfg(not(any(target_os = "macos", windows)))]
+    {
+        let _ = runtime;
+        tauri::include_image!("icons/icon.png")
     }
 }
 
 fn sync_tray(app: &AppHandle) -> Result<(), String> {
     let state = app.state::<Arc<SharedState>>();
-    let menu = build_tray_menu(app, &state).map_err(|e| e.to_string())?;
-    app.tray_by_id("main")
-        .ok_or_else(|| "托盘图标不存在".to_string())?
-        .set_menu(Some(menu))
+    let runtime = state.runtime();
+    let menu = build_tray_menu(app, &runtime).map_err(|e| e.to_string())?;
+    let tray = app
+        .tray_by_id("main")
+        .ok_or_else(|| "托盘图标不存在".to_string())?;
+    tray.set_menu(Some(menu)).map_err(|e| e.to_string())?;
+    tray.set_icon_with_as_template(Some(tray_icon(&runtime)), cfg!(target_os = "macos"))
         .map_err(|e| e.to_string())
 }
 
@@ -461,7 +497,8 @@ async fn open_help_window(app: AppHandle) -> Result<(), String> {
 
 #[cfg(test)]
 mod tests {
-    use super::parse_shortcut;
+    use super::{is_mapping_active, parse_shortcut};
+    use crate::{keyboard::BackendStatus, state::RuntimeState};
 
     #[test]
     fn parses_multi_modifier_shortcuts() {
@@ -477,5 +514,27 @@ mod tests {
     fn rejects_invalid_shortcuts() {
         assert!(parse_shortcut("Ctrl+K+Shift").is_err());
         assert!(parse_shortcut("Ctrl").is_err());
+    }
+
+    #[test]
+    fn tray_is_active_only_when_mapping_is_running() {
+        let mut runtime = RuntimeState {
+            enabled: true,
+            shortcut_registered: false,
+            accessibility_granted: true,
+            shortcut: "Ctrl+D".into(),
+            platform: "test".into(),
+            launch_at_login: false,
+            backend_status: BackendStatus::Running,
+            message: None,
+        };
+        assert!(is_mapping_active(&runtime));
+
+        runtime.backend_status = BackendStatus::Disabled;
+        assert!(!is_mapping_active(&runtime));
+
+        runtime.backend_status = BackendStatus::Running;
+        runtime.enabled = false;
+        assert!(!is_mapping_active(&runtime));
     }
 }

@@ -40,18 +40,22 @@ if errorlevel 1 (
   exit /b 1
 )
 
-if not exist "src-tauri\target\release\german-key-assist.exe" (
+if not exist "src-tauri\target\release\german-character-keys.exe" (
   echo Error: Release application was not generated.
   exit /b 1
 )
-if not exist "src-tauri\target\release\bundle\nsis\German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_x64-setup.exe" (
+set "GENERATED_INSTALLER=src-tauri\target\release\bundle\nsis\German Character Keys_0.1.0_x64-setup.exe"
+set "NAMED_INSTALLER=src-tauri\target\release\bundle\nsis\German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_x64-setup.exe"
+if not exist "%GENERATED_INSTALLER%" (
   echo Error: NSIS installer was not generated.
   exit /b 1
 )
+if exist "%NAMED_INSTALLER%" del /q "%NAMED_INSTALLER%"
+move /y "%GENERATED_INSTALLER%" "%NAMED_INSTALLER%" >nul
 
 echo.
 echo Windows x64 Release build completed.
 echo Installer: src-tauri\target\release\bundle\nsis\German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_x64-setup.exe
-echo App EXE:   src-tauri\target\release\german-key-assist.exe
+echo App EXE:   src-tauri\target\release\german-character-keys.exe
 pause
 exit /b 0

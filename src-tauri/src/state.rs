@@ -190,7 +190,7 @@ mod tests {
     #[test]
     fn config_can_be_overwritten_repeatedly() {
         let path = std::env::temp_dir().join(format!(
-            "german-key-assist-test-{}.json",
+            "german-character-keys-test-{}.json",
             std::process::id()
         ));
         let state = SharedState::load(path.clone());
@@ -206,7 +206,7 @@ mod tests {
     #[test]
     fn corrupt_config_falls_back_to_defaults() {
         let path = std::env::temp_dir().join(format!(
-            "german-key-assist-corrupt-{}.json",
+            "german-character-keys-corrupt-{}.json",
             std::process::id()
         ));
         fs::write(&path, b"not-json").unwrap();
@@ -222,7 +222,7 @@ mod tests {
     #[test]
     fn load_removes_stale_temp_file() {
         let path = std::env::temp_dir().join(format!(
-            "german-key-assist-stale-{}.json",
+            "german-character-keys-stale-{}.json",
             std::process::id()
         ));
         let temp_path = path.with_extension("json.tmp");
@@ -235,7 +235,7 @@ mod tests {
     #[test]
     fn concurrent_saves_write_valid_json_snapshots() {
         let path = std::env::temp_dir().join(format!(
-            "german-key-assist-concurrent-{}.json",
+            "german-character-keys-concurrent-{}.json",
             std::process::id()
         ));
         let state = Arc::new(SharedState::load(path.clone()));

@@ -1,11 +1,12 @@
 {
-  "name": "german-key-assist",
+  "name": "german-character-keys",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "icons": "bash scripts/generate-icon-assets.sh",
     "format": "cargo fmt --manifest-path src-tauri/Cargo.toml",
     "format:check": "cargo fmt --manifest-path src-tauri/Cargo.toml -- --check",
     "test": "cargo test --manifest-path src-tauri/Cargo.toml",

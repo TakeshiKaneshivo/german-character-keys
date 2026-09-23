@@ -18,7 +18,7 @@ fi
 
 APP_NAME="$(basename "$APP_PATH")"
 VERSION="$(node -p "require('./package.json').version")"
-DMG_PATH="$DMG_DIR/${APP_NAME%.app}_${VERSION}_aarch64.dmg"
+DMG_PATH="$DMG_DIR/German Character Keys for US Keyboards (ÄÖÜß)_${VERSION}_aarch64.dmg"
 STAGING_DIR="$DMG_DIR/.staging-$$"
 
 cleanup() {
@@ -32,11 +32,20 @@ mkdir -p "$STAGING_DIR"
 ditto "$APP_PATH" "$STAGING_DIR/$APP_NAME"
 ln -s /Applications "$STAGING_DIR/Applications"
 
-hdiutil create \
+if ! hdiutil create \
   -volname "German Character Keys" \
   -srcfolder "$STAGING_DIR" \
   -ov \
   -format UDZO \
-  "$DMG_PATH"
+  "$DMG_PATH"; then
+  # Some restricted macOS environments cannot allocate a writable device for
+  # `hdiutil create`; makehybrid creates an equivalent readable HFS+ DMG.
+  rm -f "$DMG_PATH"
+  hdiutil makehybrid \
+    -default-volume-name "German Character Keys" \
+    -hfs \
+    -o "$DMG_PATH" \
+    "$STAGING_DIR"
+fi
 
 echo "DMG created: $DMG_PATH"
