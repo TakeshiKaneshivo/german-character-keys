@@ -1,6 +1,6 @@
 [package]
 name = "german-character-keys"
-version = "0.1.0"
+version = "0.2.0"
 description = "German keyboard assistance for US ANSI keyboards"
 authors = ["German Character Keys for US Keyboards"]
 edition = "2021"

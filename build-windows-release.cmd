@@ -44,18 +44,19 @@ if not exist "src-tauri\target\release\german-character-keys.exe" (
   echo Error: Release application was not generated.
   exit /b 1
 )
-set "GENERATED_INSTALLER=src-tauri\target\release\bundle\nsis\German Character Keys_0.1.0_x64-setup.exe"
-set "NAMED_INSTALLER=src-tauri\target\release\bundle\nsis\German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_x64-setup.exe"
-if not exist "%GENERATED_INSTALLER%" (
-  echo Error: NSIS installer was not generated.
+for /f "usebackq delims=" %%P in (`node -e "const fs=require('fs');const packageJson=JSON.parse(fs.readFileSync('package.json','utf8'));const config=JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json','utf8'));const directory='src-tauri/target/release/bundle/nsis/';const source=directory+config.productName+'_'+packageJson.version+'_x64-setup.exe';const destination=directory+config.app.windows[0].title+'_'+packageJson.version+'_x64-setup.exe';if(!fs.existsSync(source))process.exit(2);if(fs.existsSync(destination))fs.unlinkSync(destination);fs.renameSync(source,destination);process.stdout.write(destination)"`) do set "NAMED_INSTALLER=%%P"
+if errorlevel 1 (
+  echo Error: NSIS installer was not generated or could not be renamed.
   exit /b 1
 )
-if exist "%NAMED_INSTALLER%" del /q "%NAMED_INSTALLER%"
-move /y "%GENERATED_INSTALLER%" "%NAMED_INSTALLER%" >nul
+if not defined NAMED_INSTALLER (
+  echo Error: Could not determine the final installer path.
+  exit /b 1
+)
 
 echo.
 echo Windows x64 Release build completed.
-echo Installer: src-tauri\target\release\bundle\nsis\German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_x64-setup.exe
+echo Installer: %NAMED_INSTALLER%
 echo App EXE:   src-tauri\target\release\german-character-keys.exe
 pause
 exit /b 0

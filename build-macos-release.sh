@@ -29,7 +29,8 @@ fi
 npm run build:macos-release
 
 APP_PATH="src-tauri/target/aarch64-apple-darwin/release/german-character-keys"
-DMG_PATH="src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/German Character Keys for US Keyboards (ÄÖÜß)_0.1.0_aarch64.dmg"
+VERSION="$(node -p "require('./package.json').version")"
+DMG_PATH="src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/German Character Keys for US Keyboards (ÄÖÜß)_${VERSION}_aarch64.dmg"
 
 if [[ ! -f "$APP_PATH" ]]; then
   echo "Error: Release application was not generated: $APP_PATH" >&2

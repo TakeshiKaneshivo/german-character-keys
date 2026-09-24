@@ -204,7 +204,11 @@ func writeBMP(_ image: CGImage, to url: URL) {
     let context = makeContext(width: width, height: height)
     context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
 
-    let pixelBytes = width * height * 4
+    // NSIS expects a conventional uncompressed Windows bitmap. Write 24-bit
+    // BGR pixels in bottom-up row order instead of a top-down 32-bit DIB.
+    let bytesPerPixel = 3
+    let rowStride = ((width * bytesPerPixel + 3) / 4) * 4
+    let pixelBytes = rowStride * height
     let fileHeaderSize = 14
     let dibHeaderSize = 40
     let pixelOffset = fileHeaderSize + dibHeaderSize
@@ -217,9 +221,9 @@ func writeBMP(_ image: CGImage, to url: URL) {
     data.append(contentsOf: uint32LE(UInt32(pixelOffset)))
     data.append(contentsOf: uint32LE(UInt32(dibHeaderSize)))
     data.append(contentsOf: int32LE(Int32(width)))
-    data.append(contentsOf: int32LE(-Int32(height)))
+    data.append(contentsOf: int32LE(Int32(height)))
     data.append(contentsOf: uint16LE(1))
-    data.append(contentsOf: uint16LE(32))
+    data.append(contentsOf: uint16LE(24))
     data.append(contentsOf: uint32LE(0))
     data.append(contentsOf: uint32LE(UInt32(pixelBytes)))
     data.append(contentsOf: int32LE(2835))
@@ -228,13 +232,15 @@ func writeBMP(_ image: CGImage, to url: URL) {
     data.append(contentsOf: uint32LE(0))
 
     let pixels = context.data!.assumingMemoryBound(to: UInt8.self)
-    for y in 0..<height {
+    for y in stride(from: height - 1, through: 0, by: -1) {
         for x in 0..<width {
             let offset = y * context.bytesPerRow + x * 4
             data.append(pixels[offset + 2])
             data.append(pixels[offset + 1])
             data.append(pixels[offset])
-            data.append(pixels[offset + 3])
+        }
+        for _ in (width * bytesPerPixel)..<rowStride {
+            data.append(0)
         }
     }
 
