@@ -12,6 +12,7 @@ Type German characters directly on a US ANSI keyboard with a small desktop helpe
 - Use `Shift` and `Caps Lock` to enter uppercase and lowercase characters.
 - Pass through keys combined with `Ctrl`, `Alt`, `Command`, `Option`, or `Windows` modifiers.
 - Toggle the mapping with a configurable global shortcut.
+- The default global toggle shortcut is `Command+K` on macOS and `Ctrl+K` on Windows/Linux; it can be recorded or reset in the shortcut editor.
 - Optionally launch the app at login.
 - Choose Light, Night, or Follow System appearance.
 - Use the interface in Simplified Chinese, Traditional Chinese, English, or German.
@@ -34,13 +35,15 @@ Keys used with `Ctrl`, `Alt`, `Command`, `Option`, or `Windows` are left unchang
 
 ## Usage
 
-1. Install and launch the app.
+1. On macOS, open the DMG and drag `German Character Keys.app` into the `Applications` folder; on Windows, run the installer, then launch the app.
 2. Enable German character mapping from the main window.
 3. Press one of the mapped US keyboard keys in any supported text field.
 4. Open the shortcut editor to record or reset the global toggle shortcut.
 5. Use the language button to change the interface language.
 6. Use the appearance button to choose Light, Night, or Follow System.
 7. Open Help for the keyboard diagram and a complete mapping explanation.
+
+When launched manually, the main window opens immediately. Closing the main window hides the app in the macOS menu bar or Windows system tray without quitting it; click the tray icon to reopen it. If launch at login is enabled, the app starts quietly in the menu bar or system tray.
 
 On macOS, grant the app permission in **System Settings > Privacy & Security > Accessibility** before enabling mapping. Windows does not require an additional accessibility permission for the keyboard hook.
 

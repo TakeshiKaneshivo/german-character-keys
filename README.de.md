@@ -12,6 +12,7 @@ Ein schlankes Desktop-Programm, mit dem du deutsche Zeichen direkt auf einer US-
 - Mit `Shift` und `Caps Lock` lassen sich Groß- und Kleinbuchstaben eingeben.
 - Tasten mit `Ctrl`, `Alt`, `Command`, `Option` oder `Windows` werden unverändert weitergegeben.
 - Die Zuordnung lässt sich mit einem konfigurierbaren globalen Tastenkürzel umschalten.
+- Das Standard-Tastenkürzel ist `Command+K` unter macOS und `Ctrl+K` unter Windows/Linux; im Shortcut-Editor kann es aufgezeichnet oder zurückgesetzt werden.
 - Die App kann beim Anmelden automatisch gestartet werden.
 - Wähle zwischen Hell, Nacht und Systemdarstellung.
 - Die Oberfläche ist auf vereinfachtem Chinesisch, traditionellem Chinesisch, Englisch und Deutsch verfügbar.
@@ -34,13 +35,15 @@ Mit `Ctrl`, `Alt`, `Command`, `Option` oder `Windows` kombinierte Tasten bleiben
 
 ## Verwendung
 
-1. Installiere und starte die App.
+1. Öffne unter macOS das DMG und ziehe `German Character Keys.app` in den Ordner `Applications`; unter Windows führe den Installer aus und starte anschließend die App.
 2. Aktiviere die Zuordnung deutscher Zeichen im Hauptfenster.
 3. Drücke eine der oben aufgeführten Tasten in einem unterstützten Textfeld.
 4. Öffne den Shortcut-Editor, um das globale Tastenkürzel aufzuzeichnen oder zurückzusetzen.
 5. Ändere die Sprache über die Sprachschaltfläche.
 6. Wähle über die Darstellungsschaltfläche Hell, Nacht oder System.
 7. Öffne die Hilfe für das Tastaturbild und die vollständige Erklärung.
+
+Beim manuellen Start wird das Hauptfenster sofort angezeigt. Das Schließen des Hauptfensters blendet die App nur in die macOS-Menüleiste oder den Windows-Infobereich aus; sie wird nicht beendet. Über das Symbol lässt sich das Fenster wieder öffnen. Wenn der automatische Start bei der Anmeldung aktiviert ist, startet die App still im Hintergrund in der Menüleiste bzw. im Infobereich.
 
 Auf macOS muss die App zuerst unter **Systemeinstellungen > Datenschutz & Sicherheit > Bedienungshilfen** erlaubt werden. Unter Windows ist keine zusätzliche Bedienungshilfe-Berechtigung erforderlich.
 
