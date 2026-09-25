@@ -12,7 +12,7 @@
 - 使用 `Shift` 和 `Caps Lock` 输入大写和小写字符。
 - 与 `Ctrl`、`Alt`、`Command`、`Option` 或 `Windows` 修饰键组合时透传原始按键。
 - 使用可配置的全局快捷键切换映射。
-- 默认全局切换快捷键为 macOS 的 `Command+K`、Windows/Linux 的 `Ctrl+K`，可在快捷键编辑器中录制或恢复默认值。
+- 默认全局切换快捷键为 macOS 的 `Command+K`、Windows 的 `Ctrl+K`，可在快捷键编辑器中录制或恢复默认值。
 - 可选择登录时自动启动。
 - 支持浅色、夜间和跟随系统主题。
 - 支持简体中文、繁體中文、English 和 Deutsch 界面。

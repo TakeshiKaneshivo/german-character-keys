@@ -12,7 +12,7 @@
 - 使用 `Shift` 與 `Caps Lock` 輸入大寫與小寫字元。
 - 與 `Ctrl`、`Alt`、`Command`、`Option` 或 `Windows` 修飾鍵組合時透傳原始按鍵。
 - 使用可設定的全域快速鍵切換映射。
-- 預設全域切換快速鍵為 macOS 的 `Command+K`、Windows/Linux 的 `Ctrl+K`，可在快速鍵編輯器中錄製或還原預設值。
+- 預設全域切換快速鍵為 macOS 的 `Command+K`、Windows 的 `Ctrl+K`，可在快速鍵編輯器中錄製或還原預設值。
 - 可選擇登入時自動啟動。
 - 支援淺色、夜間與跟隨系統主題。
 - 支援簡體中文、繁體中文、English 與 Deutsch 介面。

@@ -12,7 +12,7 @@ Ein schlankes Desktop-Programm, mit dem du deutsche Zeichen direkt auf einer US-
 - Mit `Shift` und `Caps Lock` lassen sich Groß- und Kleinbuchstaben eingeben.
 - Tasten mit `Ctrl`, `Alt`, `Command`, `Option` oder `Windows` werden unverändert weitergegeben.
 - Die Zuordnung lässt sich mit einem konfigurierbaren globalen Tastenkürzel umschalten.
-- Das Standard-Tastenkürzel ist `Command+K` unter macOS und `Ctrl+K` unter Windows/Linux; im Shortcut-Editor kann es aufgezeichnet oder zurückgesetzt werden.
+- Das Standard-Tastenkürzel ist `Command+K` unter macOS und `Ctrl+K` unter Windows; im Shortcut-Editor kann es aufgezeichnet oder zurückgesetzt werden.
 - Die App kann beim Anmelden automatisch gestartet werden.
 - Wähle zwischen Hell, Nacht und Systemdarstellung.
 - Die Oberfläche ist auf vereinfachtem Chinesisch, traditionellem Chinesisch, Englisch und Deutsch verfügbar.

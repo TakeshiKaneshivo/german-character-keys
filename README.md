@@ -12,7 +12,7 @@ Type German characters directly on a US ANSI keyboard with a small desktop helpe
 - Use `Shift` and `Caps Lock` to enter uppercase and lowercase characters.
 - Pass through keys combined with `Ctrl`, `Alt`, `Command`, `Option`, or `Windows` modifiers.
 - Toggle the mapping with a configurable global shortcut.
-- The default global toggle shortcut is `Command+K` on macOS and `Ctrl+K` on Windows/Linux; it can be recorded or reset in the shortcut editor.
+- The default global toggle shortcut is `Command+K` on macOS and `Ctrl+K` on Windows; it can be recorded or reset in the shortcut editor.
 - Optionally launch the app at login.
 - Choose Light, Night, or Follow System appearance.
 - Use the interface in Simplified Chinese, Traditional Chinese, English, or German.
